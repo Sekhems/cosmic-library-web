@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Космический Нумерологический Расчёт</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #e0e0ff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Cosmic background elements */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(128, 0, 255, 0.7);
+            background: linear-gradient(to right, #9d50bb, #6e48aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 3s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0% { text-shadow: 0 0 10px rgba(157, 80, 187, 0.7); }
+            100% { text-shadow: 0 0 25px rgba(110, 72, 170, 0.9), 0 0 35px rgba(157, 80, 187, 0.6); }
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            color: #aaccff;
+            line-height: 1.6;
+        }
+        
+        .system-description {
+            background: rgba(25, 20, 60, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px 0;
+            border: 1px solid #5d3fd3;
+            box-shadow: 0 0 20px rgba(93, 63, 211, 0.4);
+        }
+        
+        .system-description h2 {
+            color: #9d7cff;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .system-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .system-item {
+            background: rgba(40, 30, 80, 0.6);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #6e48aa;
+            transition: transform 0.3s ease;
+        }
+        
+        .system-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(110, 72, 170, 0.4);
+        }
+        
+        .system-item h3 {
+            color: #c8a2ff;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .system-item p {
+            color: #b8c6ff;
+            line-height: 1.5;
+        }
+        
+        /* Form styling */
+        .calculator-form {
+            background: rgba(20, 15, 45, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 40px 0;
+            border: 1px solid #7b68ee;
+            box-shadow: 0 0 25px rgba(123, 104, 238, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .form-title {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #b19dff;
+            font-size: 1.8rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaccff;
+            font-size: 1.1rem;
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px;
+            background: rgba(30, 25, 60, 0.7);
+            border: 1px solid #6e48aa;
+            border-radius: 10px;
+            color: #e0e0ff;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #9d50bb;
+            box-shadow: 0 0 15px rgba(157, 80, 187, 0.5);
+        }
+        
+        button {
+            background: linear-gradient(to right, #6e48aa, #9d50bb);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: linear-gradient(to right, #7b68ee, #b19dff);
+            box-shadow: 0 0 20px rgba(123, 104, 238, 0.7);
+            transform: translateY(-3px);
+        }
+        
+        /* Results styling */
+        .results-section {
+            display: none;
+            background: rgba(15, 10, 40, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 40px 0;
+            border: 1px solid #7b68ee;
+            box-shadow: 0 0 25px rgba(123, 104, 238, 0.5);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #b19dff;
+            font-size: 1.8rem;
+        }
+        
+        .calculation-steps {
+            margin-bottom: 40px;
+        }
+        
+        .step {
+            background: rgba(40, 30, 80, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #6e48aa;
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .step-number {
+            background: linear-gradient(to right, #6e48aa, #9d50bb);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .step-title {
+            color: #c8a2ff;
+            font-size: 1.4rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: rgba(30, 25, 60, 0.7);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        th {
+            background: rgba(110, 72, 170, 0.5);
+            padding: 12px;
+            text-align: left;
+            color: #e0e0ff;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(110, 72, 170, 0.3);
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .interpretation {
+            background: rgba(45, 35, 90, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #9d50bb;
+        }
+        
+        .planetary-protection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .planet-card {
+            background: rgba(40, 30, 80, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #7b68ee;
+            transition: transform 0.3s ease;
+        }
+        
+        .planet-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(123, 104, 238, 0.4);
+        }
+        
+        .planet-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .planet-icon {
+            font-size: 2.5rem;
+            margin-right: 15px;
+            color: #b19dff;
+        }
+        
+        .planet-name {
+            font-size: 1.4rem;
+            color: #c8a2ff;
+        }
+        
+        /* Cosmogram styling */
+        .cosmogram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+            margin: 40px 0;
+            position: relative;
+        }
+        
+        .center-sun {
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #ffd700, #ff8c00);
+            border-radius: 50%;
+            box-shadow: 0 0 40px #ff8c00;
+            position: absolute;
+            z-index: 1;
+            animation: pulse-sun 3s infinite alternate;
+        }
+        
+        @keyframes pulse-sun {
+            0% { transform: scale(1); box-shadow: 0 0 40px #ff8c00; }
+            100% { transform: scale(1.1); box-shadow: 0 0 60px #ff4500; }
+        }
+        
+        .orbit {
+            position: absolute;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .planet {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            box-shadow: 0 0 15px currentColor;
+            animation: orbit linear infinite;
+        }
+        
+        .planet-1 {
+            background: linear-gradient(135deg, #ff8c00, #ff4500);
+            color: #fff;
+            animation-duration: 15s;
+            top: -30px;
+            left: calc(50% - 30px);
+        }
+        
+        .planet-2 {
+            background: linear-gradient(135deg, #4169e1, #1e90ff);
+            color: #fff;
+            animation-duration: 25s;
+            top: -30px;
+            left: calc(50% - 30px);
+        }
+        
+        .planet-3 {
+            background: linear-gradient(135deg, #9400d3, #4b0082);
+            color: #fff;
+            animation-duration: 40s;
+            top: -30px;
+            left: calc(50% - 30px);
+        }
+        
+        @keyframes orbit {
+            0% { transform: rotate(0deg) translateX(150px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
+        }
+        
+        .conclusion {
+            background: rgba(45, 35, 90, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            border-left: 4px solid #9d50bb;
+        }
+        
+        .conclusion h3 {
+            color: #c8a2ff;
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+        }
+        
+        .cosmic-footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #aaccff;
+            font-size: 1.1rem;
+            border-top: 1px solid rgba(110, 72, 170, 0.3);
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .system-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .planetary-protection {
+                grid-template-columns: 1fr;
+            }
+            
+            .cosmogram {
+                height: 250px;
+            }
+            
+            .planet {
+                width: 50px;
+                height: 50px;
+                font-size: 0.9rem;
+            }
+            
+            @keyframes orbit {
+                0% { transform: rotate(0deg) translateX(120px) rotate(0deg); }
+                100% { transform: rotate(360deg) translateX(120px) rotate(-360deg); }
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background stars -->
+    <div class="stars" id="stars"></div>
+    
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-star"></i> Космический Нумерологический Расчёт <i class="fas fa-star"></i></h1>
+            <p class="subtitle">Объединяем мудрость нумерологии, таблицу Хэй и астрологические знания для анализа здоровья и прогнозирования долголетия</p>
+        </header>
+        
+        <div class="system-description">
+            <h2><i class="fas fa-atom"></i> Гибридная Система Расчёта</h2>
+            <div class="system-grid">
+                <div class="system-item">
+                    <h3><i class="fas fa-calculator"></i> Классическая нумерология</h3>
+                    <p>Системы Пифагора и Халдейская для вычисления ключевых чисел жизни, судьбы и здоровья</p>
+                </div>
+                <div class="system-item">
+                    <h3><i class="fas fa-heartbeat"></i> Таблица Хэй</h3>
+                    <p>Китайская диагностика по симптомам для определения уязвимых органов и систем</p>
+                </div>
+                <div class="system-item">
+                    <h3><i class="fas fa-globe-americas"></i> Астрологические корреляции</h3>
+                    <p>Связь планет с системами организма и их влиянием на здоровье</p>
+                </div>
+                <div class="system-item">
+                    <h3><i class="fas fa-infinity"></i> Космические законы</h3>
+                    <p>Циклы 7 и 9, волновая теория жизни для определения продолжительности жизни</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="calculator-form">
+            <h2 class="form-title"><i class="fas fa-calculator"></i> Введите данные для расчёта</h2>
+            <div class="form-group">
+                <label for="name"><i class="fas fa-user"></i> Полное имя</label>
+                <input type="text" id="name" placeholder="Например: Иван Петров">
+            </div>
+            <div class="form-group">
+                <label for="birthdate"><i class="fas fa-calendar-alt"></i> Дата рождения</label>
+                <input type="date" id="birthdate">
+            </div>
+            <button id="calculate-btn"><i class="fas fa-rocket"></i> Запустить Космический Расчёт</button>
+        </div>
+        
+        <div class="results-section" id="results-section">
+            <h2 class="section-title"><i class="fas fa-chart-line"></i> Результаты расчёта</h2>
+            
+            <div class="calculation-steps">
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h3 class="step-title">Ваш Нумерологический Код Судьбы</h3>
+                    </div>
+                    <table>
+                        <tr>
+                            <th>Параметр</th>
+                            <th>Формула</th>
+                            <th>Результат</th>
+                        </tr>
+                        <tr>
+                            <td>Число Жизни</td>
+                            <td>Сумма даты: 1+5+0+4+1+9+8+7 = 35 → 3+5 = 8</td>
+                            <td>♇ Плутон</td>
+                        </tr>
+                        <tr>
+                            <td>Число Судьбы</td>
+                            <td>Иван: 1+3+1+6 = 11; Петров: 8+7+2+9+7+3 = 36 → 3+6=9; 11+9=20 → 2</td>
+                            <td>☾ Луна</td>
+                        </tr>
+                        <tr>
+                            <td>Код Здоровья</td>
+                            <td>(Число Жизни × 3) + (Число Судьбы × 2) = (8×3)+(2×2)=28 → 1</td>
+                            <td>☉ Солнце</td>
+                        </tr>
+                    </table>
+                    <div class="interpretation">
+                        <p><i class="fas fa-info-circle"></i> <strong>Космическая интерпретация:</strong></p>
+                        <p>- <strong>8 (Плутон):</strong> Глубинные трансформации, риск хронических болезней</p>
+                        <p>- <strong>2 (Луна):</strong> Эмоции влияют на ЖКТ, гормональный фон</p>
+                        <p>- <strong>1 (Солнце):</strong> Жизненная сила высока, но нагрузка на сердце</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h3 class="step-title">Таблица Хэй × Нумерология</h3>
+                    </div>
+                    <p><i class="fas fa-diagnoses"></i> Диагностика по симптомам:</p>
+                    <table>
+                        <tr>
+                            <th>Цифра</th>
+                            <th>Органы/Системы</th>
+                            <th>Симптомы (по Хэй)</th>
+                            <th>Нумеро-риск</th>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>Сердце, позвоночник</td>
+                            <td>Боль в груди, давление</td>
+                            <td>8, 4, 11 в коде</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Желудок, лимфа</td>
+                            <td>Тошнота, отёки</td>
+                            <td>2, 7 в Числе Судьбы</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Печень, нервы</td>
+                            <td>Головокружение, горечь</td>
+                            <td>3, 5 в сумме даты</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Лёгкие, кожа</td>
+                            <td>Кашель, сыпь</td>
+                            <td>1, 22 в Коде Здоровья</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Почки, уши</td>
+                            <td>Шум в ушах, отёки ног</td>
+                            <td>6, 9 в имени</td>
+                        </tr>
+                    </table>
+                    <div class="interpretation">
+                        <p><i class="fas fa-user-md"></i> <strong>Рекомендации:</strong></p>
+                        <p>- <strong>Фокус на 1 (сердце):</strong> Контроль давления, ЭКГ раз в год</p>
+                        <p>- <strong>Риск по 2 (желудок):</strong> Избегать стрессов → гастрит</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h3 class="step-title">Расчёт Продолжительности Жизни</h3>
+                    </div>
+                    <p><i class="fas fa-hourglass-half"></i> Формула долголетия:</p>
+                    <div class="interpretation">
+                        <p>Базовый возраст = 72 года (средний по Млечному Пути)</p>
+                        <p>+ (Наибольшая цифра в коде × 3) → 8 × 3 = +24 года</p>
+                        <p>- (Количество "4" и "7" в дате рождения) → "4" в дате → -1 год</p>
+                        <p>+ (Число Судьбы) → +2 года</p>
+                        <p><strong>Итого: 72 + 24 - 1 + 2 = 97 лет</strong></p>
+                    </div>
+                    <div class="interpretation">
+                        <p><i class="fas fa-exclamation-triangle"></i> <strong>Условия достижения:</strong></p>
+                        <p>- Избегать токсинов (Плутон управляет ядами)</p>
+                        <p>- Баланс эмоций (Луна требует гармонии)</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <h3 class="step-title">Планетарная Защита (Астрокоррекция)</h3>
+                </div>
+                <div class="planetary-protection">
+                    <div class="planet-card">
+                        <div class="planet-header">
+                            <div class="planet-icon">☉</div>
+                            <h3 class="planet-name">Солнце</h3>
+                        </div>
+                        <p><strong>Орган:</strong> Сердце</p>
+                        <p><strong>Защитный ритуал:</strong> Утром: 10 мин. смотреть на восход</p>
+                    </div>
+                    <div class="planet-card">
+                        <div class="planet-header">
+                            <div class="planet-icon">☾</div>
+                            <h3 class="planet-name">Луна</h3>
+                        </div>
+                        <p><strong>Орган:</strong> Желудок</p>
+                        <p><strong>Защитный ритуал:</strong> Пить лунную воду (стакан на подоконнике в полнолуние)</p>
+                    </div>
+                    <div class="planet-card">
+                        <div class="planet-header">
+                            <div class="planet-icon">♇</div>
+                            <h3 class="planet-name">Плутон</h3>
+                        </div>
+                        <p><strong>Орган:</strong> Иммунитет</p>
+                        <p><strong>Защитный ритуал:</strong> Раз в месяц: детокс на травах</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">5</div>
+                    <h3 class="step-title">Анимированная Космограмма</h3>
+                </div>
+                <div class="cosmogram">
+                    <div class="center-sun"></div>
+                    <div class="orbit" style="width: 300px; height: 300px;">
+                        <div class="planet planet-1">
+                            <div>8</div>
+                            <div>Плутон</div>
+                        </div>
+                    </div>
+                    <div class="orbit" style="width: 400px; height: 400px;">
+                        <div class="planet planet-2">
+                            <div>2</div>
+                            <div>Луна</div>
+                        </div>
+                    </div>
+                    <div class="orbit" style="width: 500px; height: 500px;">
+                        <div class="planet planet-3">
+                            <div>1</div>
+                            <div>Солнце</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="interpretation">
+                    <p><i class="fas fa-project-diagram"></i> <strong>Энергетическая диагностика:</strong></p>
+                    <p>🌀 Вращающиеся сферы: Солнце (1) → жёлтый импульс, Плутон (8) → фиолетовые волны, Луна (2) → серебряные блики</p>
+                    <p>Энергетические потоки стабильны, но есть вихрь в зоне сердца!</p>
+                </div>
+            </div>
+            
+            <div class="conclusion">
+                <h3><i class="fas fa-clipboard-check"></i> Заключение</h3>
+                <p><strong>Главная угроза:</strong> Сердечно-сосудистые нарушения (после 60 лет)</p>
+                <p><strong>Пиковый возраст:</strong> 48 лет (проверка лёгких и почек)</p>
+                <p><strong>Потенциал долголетия:</strong> 97 лет при балансе эмоций и детоксе</p>
+                <p><strong>Космический совет:</strong> Носите гематит (защита от Плутона), ешьте золотые продукты (тыква, куркума)</p>
+            </div>
+        </div>
+        
+        <div class="cosmic-footer">
+            <p>✨ Цифры — это язык Вселенной. Ваш код здоровья — часть галактической симфонии. Следуйте ритму, и пусть звёзды хранят ваши органы! ✨</p>
+        </div>
+    </div>
+
+    <script>
+    // Создание звезд
+    function createStars() {
+        const starsContainer = document.getElementById('stars');
+        const starCount = 200;
+        
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            
+            // Случайная позиция
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            
+            // Случайный размер
+            const size = Math.random() * 3;
+            
+            // Случайная длительность анимации
+            const duration = 5 + Math.random() * 10;
+            
+            star.style.left = `${x}%`;
+            star.style.top = `${y}%`;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.setProperty('--duration', `${duration}s`);
+            
+            starsContainer.appendChild(star);
+        }
+    }
+    
+    // Основная функция расчета
+    function performHealthCalculation() {
+        const name = document.getElementById('name').value;
+        const birthdate = document.getElementById('birthdate').value;
+        
+        if (!name || !birthdate) {
+            alert('Пожалуйста, заполните все поля');
+            return;
+        }
+        
+        const birthDate = new Date(birthdate);
+        const day = birthDate.getDate();
+        const month = birthDate.getMonth() + 1;
+        const year = birthDate.getFullYear();
+        
+        // Расчет числа жизни
+        const lifePath = reduceToMasterNumber(
+            reduceToSingleDigit(day) + 
+            reduceToSingleDigit(month) + 
+            reduceToSingleDigit(sumDigits(year))
+        );
+        
+        // Расчет числа судьбы
+        const letterMap = {
+            'А':1, 'Б':2, 'В':3, 'Г':4, 'Д':5, 'Е':6, 'Ё':7, 'Ж':8, 'З':9,
+            'И':1, 'Й':2, 'К':3, 'Л':4, 'М':5, 'Н':6, 'О':7, 'П':8, 'Р':9,
+            'С':1, 'Т':2, 'У':3, 'Ф':4, 'Х':5, 'Ц':6, 'Ч':7, 'Ш':8, 'Щ':9,
+            'Ъ':1, 'Ы':2, 'Ь':3, 'Э':4, 'Ю':5, 'Я':6
+        };
+        
+        let destinyTotal = 0;
+        const nameUpper = name.toUpperCase().replace(/\s+/g, '');
+        
+        for (let i = 0; i < nameUpper.length; i++) {
+            const char = nameUpper[i];
+            if (letterMap[char]) {
+                destinyTotal += letterMap[char];
+            }
+        }
+        
+        const destiny = reduceToMasterNumber(destinyTotal);
+        
+        // Расчет кода здоровья
+        const healthCode = reduceToSingleDigit(lifePath * 3 + destiny * 2);
+        
+        // Расчет продолжительности жизни
+        const baseAge = 72;
+        
+        // Подсчет "4" и "7" в дате рождения
+        const dateStr = `${day}${month}${year}`;
+        const count4 = (dateStr.match(/4/g) || []).length;
+        const count7 = (dateStr.match(/7/g) || []).length;
+        
+        // Находим наибольшую цифру в дате рождения
+        const digits = [...`${day}${month}${year}`].map(Number);
+        const maxDigit = Math.max(...digits);
+        
+        const lifeExpectancy = baseAge + 
+            (maxDigit * 3) - 
+            (count4 + count7) + 
+            destiny;
+        
+        // Обновление результатов (передаем все необходимые переменные)
+        updateResults(lifePath, destiny, healthCode, lifeExpectancy, maxDigit, count4, count7);
+        
+        // Показать результаты
+        document.getElementById('results-section').style.display = 'block';
+        document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Вспомогательные функции
+    function sumDigits(num) {
+        let sum = 0;
+        let n = num;
+        while (n > 0) {
+            sum += n % 10;
+            n = Math.floor(n / 10);
+        }
+        return sum;
+    }
+    
+    function reduceToSingleDigit(num) {
+        if (num === 11 || num === 22 || num === 33) return num;
+        let result = num;
+        while (result > 9) {
+            result = sumDigits(result);
+        }
+        return result;
+    }
+    
+    function reduceToMasterNumber(num) {
+        if (num === 11 || num === 22 || num === 33) return num;
+        return reduceToSingleDigit(num);
+    }
+    
+    // Обновление результатов в интерфейсе
+    function updateResults(lifePath, destiny, healthCode, lifeExpectancy, maxDigit, count4, count7) {
+        // Обновление таблицы с кодами
+        const table = document.querySelector('.step table');
+        if (table) {
+            table.innerHTML = `
+                <tr>
+                    <th>Параметр</th>
+                    <th>Формула</th>
+                    <th>Результат</th>
+                </tr>
+                <tr>
+                    <td>Число Жизни</td>
+                    <td>Сумма даты рождения</td>
+                    <td>${lifePath}</td>
+                </tr>
+                <tr>
+                    <td>Число Судьбы</td>
+                    <td>Сумма числовых значений имени</td>
+                    <td>${destiny}</td>
+                </tr>
+                <tr>
+                    <td>Код Здоровья</td>
+                    <td>(Число Жизни × 3) + (Число Судьбы × 2)</td>
+                    <td>${healthCode}</td>
+                </tr>
+            `;
+        }
+        
+        // Обновление интерпретаций
+        const interpretation = document.querySelector('.interpretation');
+        if (interpretation) {
+            interpretation.innerHTML = `
+                <p><i class="fas fa-info-circle"></i> <strong>Космическая интерпретация:</strong></p>
+                <p>- <strong>${lifePath} (${getPlanetName(lifePath)}):</strong> ${getLifePathInterpretation(lifePath)}</p>
+                <p>- <strong>${destiny} (${getPlanetName(destiny)}):</strong> ${getDestinyInterpretation(destiny)}</p>
+                <p>- <strong>${healthCode} (${getPlanetName(healthCode)}):</strong> ${getHealthCodeInterpretation(healthCode)}</p>
+            `;
+        }
+        
+        // Обновление продолжительности жизни
+        const lifeExpectancyDiv = document.querySelector('.step:nth-child(3) .interpretation');
+        if (lifeExpectancyDiv) {
+            lifeExpectancyDiv.innerHTML = `
+                <p><i class="fas fa-hourglass-half"></i> Формула долголетия:</p>
+                <p>Базовый возраст = 72 года (средний по Млечному Пути)</p>
+                <p>+ (Наибольшая цифра в коде × 3) → ${maxDigit} × 3 = +${maxDigit * 3} года</p>
+                <p>- (Количество "4" и "7" в дате рождения) → "4": ${count4}, "7": ${count7} = -${count4 + count7} года</p>
+                <p>+ (Число Судьбы) → +${destiny} года</p>
+                <p><strong>Итого: 72 + ${maxDigit * 3} - ${count4 + count7} + ${destiny} = ${Math.round(lifeExpectancy)} лет</strong></p>
+            `;
+        }
+        
+        // Обновление планетарной защиты
+        const planetaryProtection = document.querySelector('.planetary-protection');
+        if (planetaryProtection) {
+            planetaryProtection.innerHTML = `
+                <div class="planet-card">
+                    <div class="planet-header">
+                        <div class="planet-icon">${getPlanetSymbol(healthCode)}</div>
+                        <h3 class="planet-name">${getPlanetName(healthCode)}</h3>
+                    </div>
+                    <p><strong>Орган:</strong> ${getOrganForHealthCode(healthCode)}</p>
+                    <p><strong>Защитный ритуал:</strong> ${getProtectionRitual(healthCode)}</p>
+                </div>
+                <div class="planet-card">
+                    <div class="planet-header">
+                        <div class="planet-icon">${getPlanetSymbol(lifePath)}</div>
+                        <h3 class="planet-name">${getPlanetName(lifePath)}</h3>
+                    </div>
+                    <p><strong>Орган:</strong> ${getOrganForLifePath(lifePath)}</p>
+                    <p><strong>Защитный ритуал:</strong> ${getLifePathProtection(lifePath)}</p>
+                </div>
+                <div class="planet-card">
+                    <div class="planet-header">
+                        <div class="planet-icon">${getPlanetSymbol(destiny)}</div>
+                        <h3 class="planet-name">${getPlanetName(destiny)}</h3>
+                    </div>
+                    <p><strong>Орган:</strong> ${getOrganForDestiny(destiny)}</p>
+                    <p><strong>Защитный ритуал:</strong> ${getDestinyProtection(destiny)}</p>
+                </div>
+            `;
+        }
+    }
+    
+    // Функции интерпретации
+    function getPlanetName(number) {
+        const planets = {
+            1: 'Солнце',
+            2: 'Луна',
+            3: 'Марс',
+            4: 'Меркурий',
+            5: 'Юпитер',
+            6: 'Венера',
+            7: 'Сатурн',
+            8: 'Уран',
+            9: 'Нептун',
+            11: 'Меркурий',
+            22: 'Венера',
+            33: 'Юпитер'
+        };
+        return planets[number] || 'Плутон';
+    }
+    
+    function getPlanetSymbol(number) {
+        const symbols = {
+            1: '☉',
+            2: '☾',
+            3: '♂',
+            4: '☿',
+            5: '♃',
+            6: '♀',
+            7: '♄',
+            8: '♅',
+            9: '♆',
+            11: '☿',
+            22: '♀',
+            33: '♃'
+        };
+        return symbols[number] || '♇';
+    }
+    
+    function getLifePathInterpretation(number) {
+        const interpretations = {
+            1: "Лидерские качества, сильная воля. Риск сердечно-сосудистых заболеваний.",
+            2: "Чувствительность, интуиция. Склонность к заболеваниям ЖКТ.",
+            3: "Творческий потенциал, общительность. Уязвима нервная система.",
+            4: "Стабильность, практичность. Возможны проблемы с суставами и костями.",
+            5: "Свободолюбие, переменчивость. Риск травм и несчастных случаев.",
+            6: "Ответственность, забота. Склонность к заболеваниям почек и репродуктивной системы.",
+            7: "Аналитический ум, духовность. Возможны проблемы с кожей и аллергии.",
+            8: "Амбициозность, сила. Риск заболеваний печени и обмена веществ.",
+            9: "Гуманизм, идеализм. Уязвима иммунная система.",
+            11: "Интуиция, вдохновение. Особое внимание нервной системе.",
+            22: "Практическая мудрость. Следить за состоянием крови и сосудов.",
+            33: "Духовная миссия. Поддерживать баланс всех систем организма."
+        };
+        return interpretations[number] || "Уникальный жизненный путь. Здоровье зависит от баланса энергий.";
+    }
+    
+    function getDestinyInterpretation(number) {
+        const interpretations = {
+            1: "Самостоятельность. Риск перенапряжения и стрессов.",
+            2: "Гармония. Важно избегать эмоциональных перегрузок.",
+            3: "Коммуникация. Следить за состоянием органов дыхания.",
+            4: "Стабильность. Возможны проблемы с позвоночником.",
+            5: "Свобода. Риск травм и несчастных случаев.",
+            6: "Служение. Уязвима мочеполовая система.",
+            7: "Мудрость. Склонность к депрессиям и уединению.",
+            8: "Успех. Риск заболеваний, связанных с перенапряжением.",
+            9: "Сострадание. Поддерживать иммунитет.",
+            11: "Просветление. Особое внимание эндокринной системе.",
+            22: "Созидание. Следить за состоянием суставов.",
+            33: "Служение. Необходим баланс физической и духовной энергии."
+        };
+        return interpretations[number] || "Уникальное предназначение. Здоровье зависит от следования своему пути.";
+    }
+    
+    function getHealthCodeInterpretation(number) {
+        const interpretations = {
+            1: "Сильная жизненная энергия. Следить за сердцем и сосудами.",
+            2: "Чувствительный организм. Важен здоровый сон и режим питания.",
+            3: "Энергичность. Избегать переутомления нервной системы.",
+            4: "Выносливость. Поддерживать костную систему.",
+            5: "Адаптивность. Риск инфекционных заболеваний.",
+            6: "Гармония. Следить за почками и репродуктивным здоровьем.",
+            7: "Интуиция. Возможны проблемы с кожей и аллергии.",
+            8: "Сила. Следить за печенью и обменом веществ.",
+            9: "Идеализм. Поддерживать иммунную систему.",
+            11: "Особое восприятие. Важен баланс психического и физического.",
+            22: "Созидательная сила. Следить за суставами и соединительной тканью.",
+            33: "Духовная сила. Необходим комплексный подход к здоровью."
+        };
+        return interpretations[number] || "Уникальный код здоровья. Слушать потребности своего организма.";
+    }
+    
+    // Функции для планетарной защиты
+    function getOrganForHealthCode(number) {
+        const organs = {
+            1: "Сердце, кровеносная система",
+            2: "Желудок, пищеварительная система",
+            3: "Нервы, нервная система",
+            4: "Кости, суставы",
+            5: "Печень, железы внутренней секреции",
+            6: "Почки, мочеполовая система",
+            7: "Кожа, лимфатическая система",
+            8: "Иммунная система, обмен веществ",
+            9: "Иммунитет, общее здоровье",
+            11: "Эндокринная система",
+            22: "Соединительная ткань",
+            33: "Весь организм в целом"
+        };
+        return organs[number] || "Вегетативная нервная система";
+    }
+    
+    function getProtectionRitual(number) {
+        const rituals = {
+            1: "Ежедневно 10 минут смотреть на восход солнца",
+            2: "Пить лунную воду (настаивать воду в полнолуние)",
+            3: "Практиковать дыхательные упражнения утром и вечером",
+            4: "Принимать соляные ванны 2 раза в неделю",
+            5: "Практиковать контрастный душ ежедневно",
+            6: "Пить травяные чаи с ромашкой и мятой",
+            7: "Медитировать 15 минут в день при свечах",
+            8: "Раз в месяц проводить детокс на свежих соках",
+            9: "Практиковать йогу или цигун 3 раза в неделю",
+            11: "Вести дневник снов и интуитивных озарений",
+            22: "Практиковать заземление (ходить босиком по земле)",
+            33: "Ежедневно практиковать благодарность"
+        };
+        return rituals[number] || "Ежедневная 10-минутная медитация";
+    }
+    
+    function getOrganForLifePath(number) {
+        return getOrganForHealthCode(number);
+    }
+    
+    function getLifePathProtection(number) {
+        return getProtectionRitual(number);
+    }
+    
+    function getOrganForDestiny(number) {
+        return getOrganForHealthCode(number);
+    }
+    
+    function getDestinyProtection(number) {
+        return getProtectionRitual(number);
+    }
+    
+    // Инициализация при загрузке
+    window.addEventListener('load', () => {
+        createStars();
+        document.getElementById('calculate-btn').addEventListener('click', performHealthCalculation);
+    });
+</script>
+</body>
+</html>

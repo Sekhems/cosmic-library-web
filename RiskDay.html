@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Космический нумерологический калькулятор риска</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Orbitron', 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(125deg, #0b0b2b, #1a1a40, #0d0d26);
+            color: #e0e0ff;
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px;
+        }
+        
+        /* Анимация звездного неба */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 5s) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .container {
+            background: rgba(10, 15, 40, 0.85);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(65, 105, 225, 0.5),
+                        0 0 60px rgba(30, 144, 255, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 149, 237, 0.3);
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            margin: 40px auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #e0e0ff;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 0 0 15px rgba(224, 224, 255, 0.7);
+            letter-spacing: 2px;
+            position: relative;
+            padding-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(224, 224, 255, 0.7), transparent);
+        }
+        
+        .cosmic-icon {
+            display: block;
+            margin: 0 auto 20px;
+            width: 80px;
+            height: 80px;
+            background: rgba(224, 224, 255, 0.2);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 0 20px rgba(224, 224, 255, 0.5);
+            animation: pulse 3s infinite;
+        }
+        
+        .cosmic-icon::before {
+            content: '✨';
+            font-size: 40px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 10px rgba(224, 224, 255, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(224, 224, 255, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(224, 224, 255, 0.5); }
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #e0e0ff;
+            font-size: 1.1rem;
+            text-shadow: 0 0 5px rgba(224, 224, 255, 0.5);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(25, 35, 70, 0.7);
+            border: 1px solid rgba(224, 224, 255, 0.5);
+            border-radius: 6px;
+            font-size: 16px;
+            color: #e0e0ff;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px rgba(224, 224, 255, 0.5);
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: rgba(224, 224, 255, 0.8);
+            box-shadow: 0 0 15px rgba(224, 224, 255, 0.5);
+        }
+        
+        button {
+            background: rgba(25, 35, 70, 0.5);
+            color: #e0e0ff;
+            border: 1px solid rgba(224, 224, 255, 0.5);
+            padding: 14px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            text-shadow: 0 0 5px rgba(224, 224, 255, 0.5);
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 5px rgba(224, 224, 255, 0.5),
+                            0 0 10px rgba(224, 224, 255, 0.3);
+            }
+            to {
+                box-shadow: 0 0 15px rgba(224, 224, 255, 0.8),
+                            0 0 30px rgba(224, 224, 255, 0.5);
+            }
+        }
+        
+        button:hover {
+            background: rgba(35, 45, 80, 0.7);
+            transform: translateY(-3px);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .button-group button {
+            flex: 1;
+        }
+        
+        .progress-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(25, 35, 70, 0.5);
+            border-radius: 10px;
+            border: 1px solid rgba(224, 224, 255, 0.5);
+        }
+        
+        progress {
+            width: 100%;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: rgba(25, 35, 70, 0.7);
+            border: 1px solid rgba(224, 224, 255, 0.5);
+        }
+        
+        progress::-webkit-progress-bar {
+            background: rgba(25, 35, 70, 0.7);
+            border-radius: 15px;
+        }
+        
+        progress::-webkit-progress-value {
+            background: linear-gradient(90deg, 
+                rgba(65, 105, 225, 0.5), 
+                rgba(106, 90, 205, 0.5), 
+                rgba(138, 43, 226, 0.5));
+            border-radius: 15px;
+            transition: width 1s ease;
+            box-shadow: 0 0 10px rgba(224, 224, 255, 0.5);
+        }
+        
+        progress::-moz-progress-bar {
+            background: linear-gradient(90deg, 
+                rgba(65, 105, 225, 0.5), 
+                rgba(106, 90, 205, 0.5), 
+                rgba(138, 43, 226, 0.5));
+            border-radius: 15px;
+        }
+        
+        .risk-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        
+        .risk-label {
+            font-size: 16px;
+            color: #e0e0ff;
+            text-shadow: 0 0 5px rgba(224, 224, 255, 0.5);
+        }
+        
+        .warning {
+            color: #e0e0ff;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(224, 224, 255, 0.8);
+        }
+        
+        .success {
+            color: #e0e0ff;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(224, 224, 255, 0.8);
+        }
+        
+        .section-title {
+            background: linear-gradient(90deg, transparent, rgba(65, 105, 225, 0.3), transparent);
+            padding: 12px 20px;
+            margin: 30px 0 15px 0;
+            border-radius: 6px;
+            font-weight: bold;
+            color: #e0e0ff;
+            text-align: center;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(224, 224, 255, 0.7);
+            border: 1px solid rgba(224, 224, 255, 0.3);
+        }
+        
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 20px;
+            background: rgba(25, 35, 70, 0.7);
+            border: 1px solid rgba(224, 224, 255, 0.5);
+            border-radius: 10px;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #e0e0ff;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 5px rgba(224, 224, 255, 0.5);
+        }
+        
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            z-index: 0;
+            box-shadow: 0 0 30px rgba(224, 224, 255, 0.3);
+        }
+        
+        #planet1 {
+            width: 150px;
+            height: 150px;
+            top: 50px;
+            right: 50px;
+            background: radial-gradient(circle at 30% 30%, rgba(106, 90, 205, 0.5), rgba(72, 61, 139, 0.3));
+            animation: float 8s infinite ease-in-out;
+        }
+        
+        #planet2 {
+            width: 100px;
+            height: 100px;
+            bottom: 80px;
+            left: 40px;
+            background: radial-gradient(circle at 30% 30%, rgba(65, 105, 225, 0.5), rgba(25, 25, 112, 0.3));
+            animation: float 10s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        .satellite {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(173, 216, 230, 0.7);
+            box-shadow: 0 0 10px rgba(173, 216, 230, 0.7);
+            z-index: 0;
+            animation: orbit 15s linear infinite;
+        }
+        
+        @keyframes orbit {
+            from { transform: rotate(0deg) translateX(100px) rotate(0deg); }
+            to { transform: rotate(360deg) translateX(100px) rotate(-360deg); }
+        }
+        
+        .satellite:nth-child(2) {
+            animation: orbit-reverse 12s linear infinite;
+        }
+        
+        @keyframes orbit-reverse {
+            from { transform: rotate(0deg) translateX(70px) rotate(0deg); }
+            to { transform: rotate(-360deg) translateX(70px) rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            #planet1, #planet2 {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Анимированные звезды -->
+    <div class="stars" id="stars-container"></div>
+    
+    <!-- Декоративные планеты -->
+    <div class="planet" id="planet1"></div>
+    <div class="planet" id="planet2"></div>
+    
+    <!-- Декоративные спутники -->
+    <div class="satellite" id="satellite1"></div>
+    <div class="satellite" id="satellite2"></div>
+    
+    <div class="container">
+        <div class="cosmic-icon"></div>
+        <h1>ТОЧНЫЙ НУМЕРОЛОГИЧЕСКИЙ РАСЧЕТ РИСКА</h1>
+        
+        <div class="form-grid">
+            <!-- Левая колонка -->
+            <div>
+                <div class="form-group">
+                    <label for="fio">ФИО:</label>
+                    <input type="text" id="fio" value="Иванов Иван Иванович">
+                </div>
+                
+                <div class="form-group">
+                    <label for="birthDate">ДАТА РОЖДЕНИЯ:</label>
+                    <input type="date" id="birthDate" value="1980-01-15">
+                </div>
+                
+                <div class="form-group">
+                    <label for="analysisDate">ДАТА АНАЛИЗА:</label>
+                    <input type="date" id="analysisDate" value="2023-10-15">
+                </div>
+            </div>
+            
+            <!-- Правая колонка -->
+            <div>
+                <div class="form-group">
+                    <label for="city">ГОРОД:</label>
+                    <input type="text" id="city" value="Москва">
+                </div>
+                
+                <div class="form-group">
+                    <label for="time">ВРЕМЯ АНАЛИЗА:</label>
+                    <input type="time" id="time" value="12:30">
+                </div>
+                
+                <div class="form-group">
+                    <label for="activity">ВИД ДЕЯТЕЛЬНОСТИ:</label>
+                    <select id="activity">
+                        <option value="daily">Повседневная деятельность</option>
+                        <option value="travel">Путешествия</option>
+                        <option value="work">Работа</option>
+                        <option value="sport">Спорт</option>
+                        <option value="driving">Вождение</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button id="calculateBtn">РАССЧИТАТЬ РИСК</button>
+            <button id="saveBtn">СОХРАНИТЬ ДАННЫЕ</button>
+            <button id="loadBtn">ЗАГРУЗИТЬ ДАННЫЕ</button>
+        </div>
+        
+        <div class="progress-container">
+            <label>УРОВЕНЬ КОСМИЧЕСКОГО РИСКА:</label>
+            <progress id="riskProgress" max="100" value="0"></progress>
+            <div class="risk-indicator">
+                <span class="risk-label">БЕЗОПАСНО</span>
+                <span class="risk-label">ВЫСОКИЙ РИСК</span>
+            </div>
+        </div>
+        
+        <div class="section-title">РЕЗУЛЬТАТЫ ТОЧНОГО РАСЧЕТА:</div>
+        <textarea id="resultArea" readonly></textarea>
+    </div>
+
+    <script>
+        // Создание звездного неба
+        function createStars() {
+            const starsContainer = document.getElementById('stars-container');
+            const starCount = 300;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Случайный размер звезды
+                const size = Math.random() * 3;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // Случайная позиция
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // Случайная длительность анимации
+                star.style.setProperty('--duration', `${Math.random() * 5 + 3}s`);
+                
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // Позиционирование спутников
+        function positionSatellites() {
+            const satellite1 = document.getElementById('satellite1');
+            const satellite2 = document.getElementById('satellite2');
+            
+            // Центр орбиты для первого спутника (планета1)
+            const planet1 = document.getElementById('planet1');
+            const rect1 = planet1.getBoundingClientRect();
+            const centerX1 = rect1.left + rect1.width/2;
+            const centerY1 = rect1.top + rect1.height/2;
+            
+            // Центр орбиты для второго спутника (планета2)
+            const planet2 = document.getElementById('planet2');
+            const rect2 = planet2.getBoundingClientRect();
+            const centerX2 = rect2.left + rect2.width/2;
+            const centerY2 = rect2.top + rect2.height/2;
+            
+            // Позиционируем спутники на начальные позиции орбит
+            satellite1.style.left = `${centerX1 + 100}px`;
+            satellite1.style.top = `${centerY1}px`;
+            
+            satellite2.style.left = `${centerX2 + 70}px`;
+            satellite2.style.top = `${centerY2}px`;
+        }
+        
+        // Инициализация анимации
+        window.addEventListener('load', () => {
+            createStars();
+            positionSatellites();
+        });
+
+        // Точная нумерологическая система расчета
+        const NumerologySystem = {
+            // Расчет числа жизненного пути
+            calculateLifePathNumber: function(birthDate) {
+                const day = birthDate.getDate();
+                const month = birthDate.getMonth() + 1;
+                const year = birthDate.getFullYear();
+                
+                return this.reduceToMasterNumber(
+                    this.reduceToSingleDigit(day) + 
+                    this.reduceToSingleDigit(month) + 
+                    this.reduceToSingleDigit(this.sumDigits(year))
+                );
+            },
+            
+            // Расчет числа судьбы
+            calculateDestinyNumber: function(fullName) {
+                const letterMap = {
+                    'А':1, 'Б':2, 'В':3, 'Г':4, 'Д':5, 'Е':6, 'Ё':7, 'Ж':8, 'З':9,
+                    'И':1, 'Й':2, 'К':3, 'Л':4, 'М':5, 'Н':6, 'О':7, 'П':8, 'Р':9,
+                    'С':1, 'Т':2, 'У':3, 'Ф':4, 'Х':5, 'Ц':6, 'Ч':7, 'Ш':8, 'Щ':9,
+                    'Ъ':1, 'Ы':2, 'Ь':3, 'Э':4, 'Ю':5, 'Я':6
+                };
+                
+                let total = 0;
+                const name = fullName.toUpperCase().replace(/\s+/g, '');
+                
+                for (let i = 0; i < name.length; i++) {
+                    const char = name[i];
+                    if (letterMap[char]) {
+                        total += letterMap[char];
+                    }
+                }
+                
+                return this.reduceToMasterNumber(total);
+            },
+            
+            // Расчет числа дня
+            calculateDayNumber: function(date) {
+                const day = date.getDate();
+                const month = date.getMonth() + 1;
+                const year = date.getFullYear();
+                
+                return this.reduceToMasterNumber(
+                    this.reduceToSingleDigit(day) + 
+                    this.reduceToSingleDigit(month) + 
+                    this.reduceToSingleDigit(this.sumDigits(year))
+                );
+            },
+            
+            // Расчет числа персонального года
+            calculatePersonalYear: function(birthDate, currentDate) {
+                const birthDay = birthDate.getDate();
+                const birthMonth = birthDate.getMonth() + 1;
+                const currentYear = currentDate.getFullYear();
+                
+                return this.reduceToMasterNumber(
+                    this.reduceToSingleDigit(birthDay) + 
+                    this.reduceToSingleDigit(birthMonth) + 
+                    this.reduceToSingleDigit(this.sumDigits(currentYear))
+                );
+            },
+            
+            // Расчет числа часа
+            calculateHourNumber: function(timeStr) {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                return this.reduceToMasterNumber(hours + minutes);
+            },
+            
+            // Расчет числа города
+            calculateCityNumber: function(cityName) {
+                const letterMap = {
+                    'А':1, 'Б':2, 'В':3, 'Г':4, 'Д':5, 'Е':6, 'Ё':7, 'Ж':8, 'З':9,
+                    'И':1, 'Й':2, 'К':3, 'Л':4, 'М':5, 'Н':6, 'О':7, 'П':8, 'Р':9,
+                    'С':1, 'Т':2, 'У':3, 'Ф':4, 'Х':5, 'Ц':6, 'Ч':7, 'Ш':8, 'Щ':9,
+                    'Ъ':1, 'Ы':2, 'Ь':3, 'Э':4, 'Ю':5, 'Я':6
+                };
+                
+                let total = 0;
+                const city = cityName.toUpperCase().replace(/\s+/g, '');
+                
+                for (let i = 0; i < city.length; i++) {
+                    const char = city[i];
+                    if (letterMap[char]) {
+                        total += letterMap[char];
+                    }
+                }
+                
+                return this.reduceToMasterNumber(total);
+            },
+            
+            // Сумма цифр числа
+            sumDigits: function(num) {
+                let sum = 0;
+                let n = num;
+                
+                while (n > 0) {
+                    sum += n % 10;
+                    n = Math.floor(n / 10);
+                }
+                
+                return sum;
+            },
+            
+            // Сведение к одной цифре
+            reduceToSingleDigit: function(num) {
+                if (num === 11 || num === 22 || num === 33) return num;
+                
+                let result = num;
+                while (result > 9) {
+                    result = this.sumDigits(result);
+                }
+                return result;
+            },
+            
+            // Сведение к мастер-числу
+            reduceToMasterNumber: function(num) {
+                if (num === 11 || num === 22 || num === 33) return num;
+                return this.reduceToSingleDigit(num);
+            },
+            
+            // Анализ риска на основе нумерологических чисел
+            analyzeRisk: function(lifePath, destiny, dayNumber, personalYear, hourNumber, cityNumber, activity) {
+                let riskScore = 0;
+                
+                // 1. Анализ числа дня
+                if ([4, 8, 13, 17].includes(dayNumber)) riskScore += 3;
+                else if ([5, 7, 14].includes(dayNumber)) riskScore += 2;
+                else if ([9, 18].includes(dayNumber)) riskScore += 1;
+                
+                // 2. Анализ числа жизненного пути
+                if ([4, 8, 13].includes(lifePath)) riskScore += 2;
+                
+                // 3. Анализ числа судьбы
+                if ([4, 8, 16].includes(destiny)) riskScore += 2;
+                
+                // 4. Анализ числа персонального года
+                if ([4, 8, 13].includes(personalYear)) riskScore += 3;
+                else if ([7, 16].includes(personalYear)) riskScore += 2;
+                
+                // 5. Анализ конфликта чисел
+                if (lifePath === dayNumber && [4, 8].includes(lifePath)) riskScore += 4;
+                if (destiny === dayNumber && [4, 8].includes(destiny)) riskScore += 3;
+                
+                // 6. Анализ числа часа
+                if ([4, 8, 13, 17].includes(hourNumber)) riskScore += 2;
+                
+                // 7. Анализ числа города
+                if ([4, 8, 13].includes(cityNumber)) riskScore += 1;
+                
+                // 8. Анализ вида деятельности
+                const activityRisk = {
+                    'daily': 1,
+                    'travel': 3,
+                    'work': 2,
+                    'sport': 4,
+                    'driving': 3
+                };
+                riskScore += activityRisk[activity] || 1;
+                
+                // 9. Кармические числа
+                if (dayNumber === 13 || dayNumber === 14 || dayNumber === 16 || dayNumber === 19) {
+                    riskScore += 2;
+                }
+                
+                // 10. Особо опасные комбинации
+                if (lifePath === 4 && dayNumber === 4) riskScore += 3;
+                if (lifePath === 8 && dayNumber === 8) riskScore += 3;
+                if (destiny === 4 && dayNumber === 4) riskScore += 2;
+                if (destiny === 8 && dayNumber === 8) riskScore += 2;
+                
+                // Ограничение максимального балла
+                return Math.min(riskScore, 25);
+            },
+            
+            // Получение описания числа
+            getNumberDescription: function(num) {
+                const descriptions = {
+                    1: "Новое начало, лидерство - низкий риск",
+                    2: "Гармония, сотрудничество - низкий риск",
+                    3: "Творчество, общение - низкий риск",
+                    4: "Стабильность, тяжелая работа - повышенный риск несчастных случаев",
+                    5: "Изменения, свобода - средний риск",
+                    6: "Ответственность, семья - низкий риск",
+                    7: "Анализ, духовность - низкий риск",
+                    8: "Успех, власть - повышенный риск из-за переоценки сил",
+                    9: "Завершение, мудрость - низкий риск",
+                    11: "Интуиция, вдохновение - требует осторожности в принятии решений",
+                    22: "Созидание, практическая реализация - умеренный риск",
+                    13: "Трансформация, испытания - высокий риск несчастных случаев",
+                    14: "Адаптация, движение - риск в транспортных ситуациях",
+                    16: "Кризис, разрушение старого - высокий риск",
+                    17: "Надежда, духовное пробуждение - умеренный риск",
+                    19: "Солнце, успех - риск из-за излишней уверенности"
+                };
+                
+                return descriptions[num] || "Стандартный уровень риска";
+            },
+            
+            // Получение рекомендаций по числу
+            getNumberAdvice: function(num) {
+                const advice = {
+                    4: "Будьте особенно внимательны к деталям и соблюдайте технику безопасности",
+                    8: "Избегайте рисковых финансовых операций и не переоценивайте свои силы",
+                    13: "Отложите опасные мероприятия, будьте осторожны на дорогах",
+                    14: "Проверьте транспорт перед поездкой, избегайте спешки",
+                    16: "Отмените опасные мероприятия, сосредоточьтесь на духовном развитии",
+                    19: "Сохраняйте баланс между амбициями и осторожностью"
+                };
+                
+                return advice[num] || "Соблюдайте стандартные меры предосторожности";
+            },
+            
+            // Получение рекомендаций по виду деятельности
+            getActivityAdvice: function(activity) {
+                const advice = {
+                    'daily': "Внимательно выполняйте рутинные дела, избегайте спешки",
+                    'travel': "Проверьте транспорт, спланируйте маршрут, избегайте ночных поездок",
+                    'work': "Соблюдайте технику безопасности, проверьте оборудование",
+                    'sport': "Избегайте экстремальных нагрузок, используйте защитное снаряжение",
+                    'driving': "Проверьте автомобиль, избегайте превышения скорости, будьте внимательны"
+                };
+                
+                return advice[activity] || "Соблюдайте стандартные меры предосторожности";
+            }
+        };
+
+        // DOM элементы
+        const calculateBtn = document.getElementById('calculateBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const loadBtn = document.getElementById('loadBtn');
+        const riskProgress = document.getElementById('riskProgress');
+        const resultArea = document.getElementById('resultArea');
+
+        // Основная функция расчета
+        calculateBtn.addEventListener('click', () => {
+            try {
+                // Получение значений из формы
+                const fio = document.getElementById('fio').value;
+                const birthDate = new Date(document.getElementById('birthDate').value);
+                const analysisDate = new Date(document.getElementById('analysisDate').value);
+                const time = document.getElementById('time').value;
+                const city = document.getElementById('city').value;
+                const activity = document.getElementById('activity').value;
+                
+                // Проверка обязательных полей
+                if (!fio) {
+                    resultArea.value = 'Пожалуйста, введите ФИО.';
+                    riskProgress.value = 0;
+                    return;
+                }
+                
+                // Расчет нумерологических чисел
+                const lifePathNumber = NumerologySystem.calculateLifePathNumber(birthDate);
+                const destinyNumber = NumerologySystem.calculateDestinyNumber(fio);
+                const dayNumber = NumerologySystem.calculateDayNumber(analysisDate);
+                const personalYear = NumerologySystem.calculatePersonalYear(birthDate, analysisDate);
+                const hourNumber = NumerologySystem.calculateHourNumber(time);
+                const cityNumber = NumerologySystem.calculateCityNumber(city);
+                
+                // Расчет риска
+                const riskScore = NumerologySystem.analyzeRisk(
+                    lifePathNumber, 
+                    destinyNumber, 
+                    dayNumber, 
+                    personalYear,
+                    hourNumber,
+                    cityNumber,
+                    activity
+                );
+                
+                // Расчет процента риска
+                const riskPercentage = Math.min(Math.round((riskScore / 25) * 100), 100);
+                riskProgress.value = riskPercentage;
+                
+                // Формирование отчета
+                generateReport(
+                    lifePathNumber,
+                    destinyNumber,
+                    dayNumber,
+                    personalYear,
+                    hourNumber,
+                    cityNumber,
+                    activity,
+                    riskScore,
+                    riskPercentage
+                );
+            } catch (e) {
+                resultArea.value = `Ошибка: ${e.message}`;
+                console.error(e);
+            }
+        });
+
+        // Генерация отчета
+        function generateReport(lifePath, destiny, day, personalYear, hour, city, activity, riskScore, riskPercent) {
+            let report = '--- 🌌 ВАШИ КЛЮЧЕВЫЕ НУМЕРОЛОГИЧЕСКИЕ ЧИСЛА ---\n';
+            report += `✨ Число Жизненного Пути (${lifePath}): ${NumerologySystem.getNumberDescription(lifePath)}\n`;
+            report += `✨ Число Судьбы (${destiny}): ${NumerologySystem.getNumberDescription(destiny)}\n`;
+            report += `✨ Число Дня (${day}): ${NumerologySystem.getNumberDescription(day)}\n`;
+            report += `✨ Число Персонального Года (${personalYear}): ${NumerologySystem.getNumberDescription(personalYear)}\n`;
+            report += `✨ Число Часа (${hour}): ${NumerologySystem.getNumberDescription(hour)}\n`;
+            report += `✨ Число Города (${city}): ${NumerologySystem.getNumberDescription(city)}\n\n`;
+            
+            report += '--- ⚠️ АНАЛИЗ РИСКА НЕСЧАСТНЫХ СЛУЧАЕВ ---\n';
+            report += `🔢 Общий балл риска: ${riskScore}/25\n`;
+            report += `📊 Процент риска: ${riskPercent}%\n\n`;
+            
+            report += '--- 📜 РЕКОМЕНДАЦИИ И ПРЕДОСТЕРЕЖЕНИЯ ---\n';
+            report += `🔹 По числу Жизненного Пути: ${NumerologySystem.getNumberAdvice(lifePath)}\n`;
+            report += `🔹 По числу Дня: ${NumerologySystem.getNumberAdvice(day)}\n`;
+            report += `🔹 По виду деятельности: ${NumerologySystem.getActivityAdvice(activity)}\n\n`;
+            
+            report += '--- 💫 КОСМИЧЕСКИЙ ПРОГНОЗ ---\n';
+            if (riskPercent > 70) {
+                report += '🚫 КРИТИЧЕСКИЙ УРОВЕНЬ РИСКА! Этот день крайне неблагоприятен для любых рискованных мероприятий. Избегайте поездок, экстремальных видов деятельности и принятия важных решений. Будьте особенно внимательны на дорогах и при работе с техникой.\n';
+            } else if (riskPercent > 40) {
+                report += '⚠️ ПОВЫШЕННЫЙ УРОВЕНЬ РИСКА! Будьте предельно осторожны в течение всего дня. Отложите опасные мероприятия, проверяйте технику и транспорт перед использованием. Избегайте спешки и конфликтных ситуаций.\n';
+            } else if (riskPercent > 20) {
+                report += '🔸 УМЕРЕННЫЙ УРОВЕНЬ РИСКА! Стандартные меры предосторожности помогут избежать неприятностей. Следите за своим состоянием, не переоценивайте силы. Избегайте ненужного риска.\n';
+            } else {
+                report += '✅ НИЗКИЙ УРОВЕНЬ РИСКА! Благоприятный день с минимальной вероятностью несчастных случаев. Тем не менее, сохраняйте бдительность и соблюдайте стандартные правила безопасности.\n';
+            }
+            
+            resultArea.value = report;
+        }
+
+        // Функции сохранения/загрузки
+        saveBtn.addEventListener('click', () => {
+            const formData = {
+                fio: document.getElementById('fio').value,
+                birthDate: document.getElementById('birthDate').value,
+                analysisDate: document.getElementById('analysisDate').value,
+                time: document.getElementById('time').value,
+                city: document.getElementById('city').value,
+                activity: document.getElementById('activity').value,
+                riskPercent: riskProgress.value,
+                report: resultArea.value
+            };
+            
+            localStorage.setItem('numerologyRiskData', JSON.stringify(formData));
+            alert('ДАННЫЕ СОХРАНЕНЫ В КОСМИЧЕСКОЕ ХРАНИЛИЩЕ!');
+        });
+
+        loadBtn.addEventListener('click', () => {
+            const savedData = localStorage.getItem('numerologyRiskData');
+            if (!savedData) {
+                alert('НЕТ СОХРАНЕННЫХ ДАННЫХ В КОСМИЧЕСКОЙ ПАМЯТИ');
+                return;
+            }
+            
+            const formData = JSON.parse(savedData);
+            document.getElementById('fio').value = formData.fio || '';
+            document.getElementById('birthDate').value = formData.birthDate || '';
+            document.getElementById('analysisDate').value = formData.analysisDate || '';
+            document.getElementById('time').value = formData.time || '';
+            document.getElementById('city').value = formData.city || '';
+            document.getElementById('activity').value = formData.activity || 'daily';
+            riskProgress.value = formData.riskPercent || 0;
+            resultArea.value = formData.report || '';
+            
+            alert('ДАННЫЕ ЗАГРУЖЕНЫ ИЗ КОСМИЧЕСКОЙ ПАМЯТИ!');
+        });
+    </script>
+</body>
+</html>

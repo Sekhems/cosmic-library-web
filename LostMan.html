@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Космический нумерологический детектив</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0c0c2e, #1a1a4a, #0d0d26);
+            color: #e0e0ff;
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px;
+        }
+        
+        /* Анимация звездного неба */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 4s) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        .pulsar {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(106, 90, 205, 0.3), transparent 70%);
+            animation: pulse 3s infinite;
+            z-index: -1;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(65, 105, 225, 0.7); }
+            70% { box-shadow: 0 0 0 50px rgba(65, 105, 225, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(65, 105, 225, 0); }
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: rgba(10, 15, 40, 0.85);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(65, 105, 225, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 149, 237, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 20px;
+        }
+        
+        h1 {
+            color: #7fffd4;
+            font-size: 2.8rem;
+            text-shadow: 0 0 15px rgba(127, 255, 212, 0.7);
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            color: #add8e6;
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            text-shadow: 0 0 5px rgba(173, 216, 230, 0.5);
+        }
+        
+        .divider {
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #7fffd4, transparent);
+            width: 70%;
+            margin: 20px auto;
+        }
+        
+        .search-icon {
+            display: block;
+            margin: 0 auto 20px;
+            font-size: 60px;
+            color: #7fffd4;
+            text-shadow: 0 0 15px rgba(127, 255, 212, 0.7);
+            animation: float 6s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #add8e6;
+            font-size: 1.1rem;
+            text-shadow: 0 0 5px rgba(173, 216, 230, 0.5);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(25, 35, 70, 0.7);
+            border: 1px solid #4169e1;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #e0e0ff;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #7fffd4;
+            box-shadow: 0 0 15px rgba(127, 255, 212, 0.5);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #4169e1, #6a5acd);
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            position: relative;
+            overflow: hidden;
+            display: block;
+            margin: 30px auto;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 0 20px rgba(65, 105, 225, 0.5);
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: all 0.6s ease;
+        }
+        
+        button:hover::before {
+            left: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(65, 105, 225, 0.8);
+        }
+        
+        .results-section {
+            margin-top: 40px;
+            padding: 25px;
+            background: rgba(20, 25, 60, 0.7);
+            border-radius: 12px;
+            border: 1px solid #4169e1;
+        }
+        
+        .section-title {
+            text-align: center;
+            color: #7fffd4;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            text-shadow: 0 0 10px rgba(127, 255, 212, 0.7);
+        }
+        
+        .result-box {
+            background: rgba(15, 20, 50, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(100, 149, 237, 0.4);
+        }
+        
+        .result-title {
+            color: #7fffd4;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            text-shadow: 0 0 5px rgba(127, 255, 212, 0.5);
+        }
+        
+        .result-content {
+            line-height: 1.7;
+            font-size: 16px;
+            color: #e0e0ff;
+        }
+        
+        .highlight {
+            color: #ffd700;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+        
+        .warning {
+            color: #ff6347;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 99, 71, 0.5);
+        }
+        
+        .positive {
+            color: #32cd32;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(50, 205, 50, 0.5);
+        }
+        
+        .satellite {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%234169E1" /><circle cx="35" cy="35" r="10" fill="%237FFFD4" /></svg>');
+            background-size: contain;
+            animation: orbit 25s linear infinite;
+            z-index: 0;
+        }
+        
+        @keyframes orbit {
+            from { transform: rotate(0deg) translateX(250px) rotate(0deg); }
+            to { transform: rotate(360deg) translateX(250px) rotate(-360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 20px;
+                margin: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Анимированные звезды -->
+    <div class="stars" id="stars-container"></div>
+    
+    <!-- Пульсирующие объекты -->
+    <div class="pulsar" style="top: 10%; left: 10%;"></div>
+    <div class="pulsar" style="top: 70%; left: 85%; animation-delay: -1.5s;"></div>
+    
+    <!-- Спутники -->
+    <div class="satellite" style="top: 40%; left: 50%;"></div>
+    <div class="satellite" style="top: 60%; left: 50%; animation: orbit-reverse 30s linear infinite;"></div>
+    
+    <div class="container">
+        <header>
+            <div class="search-icon">🔍</div>
+            <h1>КОСМИЧЕСКИЙ НУМЕРОЛОГИЧЕСКИЙ ДЕТЕКТИВ</h1>
+            <p class="subtitle">Точный нумерологический анализ для поиска пропавших людей</p>
+            <div class="divider"></div>
+        </header>
+        
+        <div class="form-grid">
+            <div>
+                <div class="form-group">
+                    <label for="personName">ФИО пропавшего:</label>
+                    <input type="text" id="personName" placeholder="Иванов Иван Иванович">
+                </div>
+                
+                <div class="form-group">
+                    <label for="birthDate">Дата рождения пропавшего:</label>
+                    <input type="date" id="birthDate">
+                </div>
+                
+                <div class="form-group">
+                    <label for="disappearanceDate">Дата исчезновения:</label>
+                    <input type="date" id="disappearanceDate">
+                </div>
+            </div>
+            
+            <div>
+                <div class="form-group">
+                    <label for="disappearanceTime">Время исчезновения:</label>
+                    <input type="time" id="disappearanceTime">
+                </div>
+                
+                <div class="form-group">
+                    <label for="location">Место исчезновения:</label>
+                    <input type="text" id="location" placeholder="Город, район">
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastSeen">Последнее известное место:</label>
+                    <input type="text" id="lastSeen" placeholder="Где видели в последний раз">
+                </div>
+            </div>
+        </div>
+        
+        <button id="analyzeBtn">ПРОВЕСТИ НУМЕРОЛОГИЧЕСКИЙ АНАЛИЗ</button>
+        
+        <div class="results-section">
+            <h2 class="section-title">РЕЗУЛЬТАТЫ НУМЕРОЛОГИЧЕСКОГО РАССЛЕДОВАНИЯ</h2>
+            
+            <div class="result-box">
+                <h3 class="result-title">Число Жизненного Пути</h3>
+                <div class="result-content" id="lifePathResult">
+                    Введите данные и нажмите "Провести анализ"
+                </div>
+            </div>
+            
+            <div class="result-box">
+                <h3 class="result-title">Число Судьбы</h3>
+                <div class="result-content" id="destinyResult">
+                    Введите данные и нажмите "Провести анализ"
+                </div>
+            </div>
+            
+            <div class="result-box">
+                <h3 class="result-title">Число Дня Исчезновения</h3>
+                <div class="result-content" id="disappearanceDayResult">
+                    Введите данные и нажмите "Провести анализ"
+                </div>
+            </div>
+            
+            <div class="result-box">
+                <h3 class="result-title">Анализ ситуации</h3>
+                <div class="result-content" id="situationAnalysis">
+                    Введите данные и нажмите "Провести анализ"
+                </div>
+            </div>
+            
+            <div class="result-box">
+                <h3 class="result-title">Прогноз и рекомендации</h3>
+                <div class="result-content" id="recommendations">
+                    Введите данные и нажмите "Провести анализ"
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+       // Создание звездного неба
+    function createStars() {
+        const starsContainer = document.getElementById('stars-container');
+        const starCount = 200;
+        
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            
+            // Случайный размер звезды
+            const size = Math.random() * 3;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            
+            // Случайная позиция
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            
+            // Случайная длительность анимации
+            star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+            
+            starsContainer.appendChild(star);
+        }
+    }
+    
+    // Точная нумерологическая система
+    const NumerologySystem = {
+        // Расчет числа жизненного пути
+        calculateLifePathNumber: function(birthDate) {
+            const day = birthDate.getDate();
+            const month = birthDate.getMonth() + 1;
+            const year = birthDate.getFullYear();
+            
+            return this.reduceToMasterNumber(
+                this.reduceToSingleDigit(day) + 
+                this.reduceToSingleDigit(month) + 
+                this.reduceToSingleDigit(this.sumDigits(year))
+            );
+        },
+        
+        // Расчет числа судьбы
+        calculateDestinyNumber: function(fullName) {
+            const letterMap = {
+                'А':1, 'Б':2, 'В':3, 'Г':4, 'Д':5, 'Е':6, 'Ё':7, 'Ж':8, 'З':9,
+                'И':1, 'Й':2, 'К':3, 'Л':4, 'М':5, 'Н':6, 'О':7, 'П':8, 'Р':9,
+                'С':1, 'Т':2, 'У':3, 'Ф':4, 'Х':5, 'Ц':6, 'Ч':7, 'Ш':8, 'Щ':9,
+                'Ъ':1, 'Ы':2, 'Ь':3, 'Э':4, 'Ю':5, 'Я':6
+            };
+            
+            let total = 0;
+            const name = fullName.toUpperCase().replace(/\s+/g, '');
+            
+            for (let i = 0; i < name.length; i++) {
+                const char = name[i];
+                if (letterMap[char]) {
+                    total += letterMap[char];
+                }
+            }
+            
+            return this.reduceToMasterNumber(total);
+        },
+        
+        // Расчет числа дня
+        calculateDayNumber: function(date) {
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            
+            return this.reduceToMasterNumber(
+                this.reduceToSingleDigit(day) + 
+                this.reduceToSingleDigit(month) + 
+                this.reduceToSingleDigit(this.sumDigits(year))
+            );
+        },
+        
+        // Сумма цифр числа
+        sumDigits: function(num) {
+            let sum = 0;
+            let n = num;
+            
+            while (n > 0) {
+                sum += n % 10;
+                n = Math.floor(n / 10);
+            }
+            
+            return sum;
+        },
+        
+        // Сведение к одной цифре
+        reduceToSingleDigit: function(num) {
+            if (num === 11 || num === 22 || num === 33) return num;
+            
+            let result = num;
+            while (result > 9) {
+                result = this.sumDigits(result);
+            }
+            return result;
+        },
+        
+        // Сведение к мастер-числу
+        reduceToMasterNumber: function(num) {
+            if (num === 11 || num === 22 || num === 33) return num;
+            return this.reduceToSingleDigit(num);
+        },
+        
+        // Интерпретация числа жизненного пути для пропавших
+        interpretLifePath: function(number) {
+            const interpretations = {
+                1: "Сильный, независимый человек. Возможно, решил начать новую жизнь.",
+                2: "Человек с развитой интуицией. Мог уйти в результате эмоционального потрясения.",
+                3: "Общительная личность. Исчезновение может быть связано с творческими проектами.",
+                4: "Практичный и надежный. Вероятно, исчезновение не было добровольным.",
+                5: "Свободолюбивый и переменчивый. Возможно, ушел осознанно в поисках изменений.",
+                6: "Ответственный, семейный человек. Маловероятно, что ушел добровольно.",
+                7: "Мистическая, духовная натура. Мог уйти в уединение для размышлений.",
+                8: "Амбициозный, сильный человек. Исчезновение может быть связано с деловыми вопросами.",
+                9: "Гуманист, идеалист. Возможно, ушел помогать другим или в миссионерских целях.",
+                11: "Чувствительный, с развитой интуицией. Мог предвидеть опасность и скрыться.",
+                22: "Практичный мечтатель. Исчезновение может быть связано с глобальными проектами.",
+                33: "Человек с высокой духовной миссией. Мог уйти для выполнения важной задачи."
+            };
+            
+            return interpretations[number] || "Особые обстоятельства, требующие глубокого анализа.";
+        },
+        
+        // Интерпретация числа судьбы
+        interpretDestiny: function(number) {
+            const interpretations = {
+                1: "Предназначение - лидерство. Исчезновение может быть связано с самостоятельными действиями.",
+                2: "Предназначение - гармония. Возможно, стал жертвой конфликта или несправедливости.",
+                3: "Предназначение - творчество. Мог уйти в творческий поиск или вдохновляющую поездку.",
+                4: "Предназначение - стабильность. Внезапное исчезновение не характерно для этого числа.",
+                5: "Предназначение - свобода. Вероятно, ушел добровольно в поисках перемен.",
+                6: "Предназначение - служение семье. Маловероятно, что ушел по собственной воле.",
+                7: "Предназначение - духовный поиск. Мог уйти в уединение для размышлений.",
+                8: "Предназначение - достижение успеха. Исчезновение может быть связано с деловыми интересами.",
+                9: "Предназначение - служение человечеству. Возможно, ушел помогать другим.",
+                11: "Предназначение - вдохновение. Мог уйти под влиянием сильного озарения.",
+                22: "Предназначение - великие дела. Исчезновение может быть частью большого плана.",
+                33: "Предназначение - духовное учительство. Мог уйти для выполнения миссии."
+            };
+            
+            return interpretations[number] || "Сложная судьба, требующая особого подхода к поиску.";
+        },
+        
+        // Интерпретация числа дня исчезновения
+        interpretDisappearanceDay: function(number) {
+            const interpretations = {
+                1: "Новый цикл, начало. Возможно, человек начал новую жизнь.",
+                2: "Двойственность, выбор. Мог оказаться перед сложным решением и уйти.",
+                3: "Коммуникация, творчество. Исчезновение могло быть связано с общением или проектом.",
+                4: "Стабильность, безопасность. Неожиданное событие, вероятно внешнее вмешательство.",
+                5: "Изменения, свобода. Часто указывает на добровольное исчезновение.",
+                6: "Семья, ответственность. Маловероятно добровольное исчезновение.",
+                7: "Тайна, анализ. Человек мог уйти для размышлений или стал жертвой тайны.",
+                8: "Успех, власть. Исчезновение может быть связано с деловыми вопросами.",
+                9: "Завершение, переход. Мог уйти, чтобы оставить прошлое позади.",
+                11: "Интуиция, озарение. Возможно, последовал внутреннему голосу.",
+                22: "Глобальные проекты. Исчезновение может быть частью большого плана.",
+                13: "Трансформация, испытания. Критическая ситуация, требующая немедленных действий.",
+                16: "Кризис, разрушение. Серьезная опасность, возможны несчастные случаи."
+            };
+            
+            return interpretations[number] || "Особый день с кармическими уроками.";
+        },
+        
+        // Анализ ситуации
+        analyzeSituation: function(lifePath, destiny, dayNumber) {
+            // Критические комбинации
+            if (dayNumber === 13 || dayNumber === 16) {
+                return "Критическая ситуация! Число дня указывает на возможную опасность или несчастный случай. Необходимы срочные поиски.";
+            }
+            
+            if (lifePath === 5 || destiny === 5 || dayNumber === 5) {
+                return "Высокая вероятность добровольного ухода. Человек мог отправиться в путешествие или начать новую жизнь.";
+            }
+            
+            if (lifePath === 7 || destiny === 7) {
+                return "Человек мог уйти добровольно для уединения, духовных поисков или размышлений.";
+            }
+            
+            if ([4, 6].includes(lifePath) || [4, 6].includes(destiny)) {
+                return "Маловероятно, что уход был добровольным. Возможно, внешние обстоятельства или принуждение.";
+            }
+            
+            if (lifePath === 8 || destiny === 8 || dayNumber === 8) {
+                return "Исчезновение может быть связано с деловой активностью, финансовыми вопросами или карьерой.";
+            }
+            
+            if (dayNumber === 11 || lifePath === 11 || destiny === 11) {
+                return "Человек мог последовать внутреннему голосу или озарению. Возможно, ищет духовные ответы.";
+            }
+            
+            return "Сложная ситуация, требующая глубокого анализа всех обстоятельств.";
+        },
+        
+        // Прогноз и рекомендации
+        getRecommendations: function(lifePath, destiny, dayNumber) {
+            const recommendations = [];
+            
+            if (dayNumber === 13 || dayNumber === 16) {
+                recommendations.push("Немедленно обратитесь в правоохранительные органы");
+                recommendations.push("Организуйте поисковые группы в месте исчезновения");
+                recommendations.push("Проверьте больницы и медицинские учреждения");
+            } else if (lifePath === 5 || destiny === 5) {
+                recommendations.push("Проверьте транспортные узлы (автовокзалы, вокзалы, аэропорты)");
+                recommendations.push("Изучите социальные сети на предмет следов перемещения");
+                recommendations.push("Свяжитесь с друзьями, которые могут знать о планах путешествия");
+            } else if (lifePath === 7 || destiny === 7) {
+                recommendations.push("Проверьте места уединения (лесные массивы, горные районы, духовные центры)");
+                recommendations.push("Свяжитесь с духовными общинами и ретрит-центрами");
+                recommendations.push("Проверьте аренду жилья в отдаленных районах");
+            } else {
+                recommendations.push("Тщательно исследуйте последние места пребывания");
+                recommendations.push("Проверьте финансовые операции и телефонные соединения");
+                recommendations.push("Обратитесь в волонтерские поисковые организации");
+            }
+            
+            recommendations.push("Используйте все доступные медиаресурсы для распространения информации");
+            recommendations.push("Организуйте дежурство на телефоне для приема информации");
+            recommendations.push("Не теряйте надежду - многие пропавшие находятся живыми");
+            
+            return recommendations;
+        }
+    };
+
+    // Инициализация при загрузке
+    window.addEventListener('load', () => {
+        createStars();
+        
+        // Установка сегодняшней даты по умолчанию
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0];
+        document.getElementById('disappearanceDate').value = formattedDate;
+        
+        // Обработчик кнопки анализа
+        document.getElementById('analyzeBtn').addEventListener('click', performAnalysis);
+    });
+
+    // Основная функция анализа
+    function performAnalysis() {
+        const personName = document.getElementById('personName').value;
+        const birthDate = new Date(document.getElementById('birthDate').value);
+        const disappearanceDate = new Date(document.getElementById('disappearanceDate').value);
+        
+        if (!personName || !birthDate || isNaN(birthDate.getTime())) {
+            alert("Пожалуйста, заполните все обязательные поля: ФИО и дата рождения");
+            return;
+        }
+        
+        // Расчет чисел
+        const lifePath = NumerologySystem.calculateLifePathNumber(birthDate);
+        const destiny = NumerologySystem.calculateDestinyNumber(personName);
+        const dayNumber = NumerologySystem.calculateDayNumber(disappearanceDate);
+        
+        // Отображение результатов
+        document.getElementById('lifePathResult').innerHTML = 
+            `<span class="highlight">Число ${lifePath}</span>: ${NumerologySystem.interpretLifePath(lifePath)}`;
+        
+        document.getElementById('destinyResult').innerHTML = 
+            `<span class="highlight">Число ${destiny}</span>: ${NumerologySystem.interpretDestiny(destiny)}`;
+        
+        document.getElementById('disappearanceDayResult').innerHTML = 
+            `<span class="highlight">Число ${dayNumber}</span>: ${NumerologySystem.interpretDisappearanceDay(dayNumber)}`;
+        
+        document.getElementById('situationAnalysis').innerHTML = 
+            `<span class="${dayNumber === 13 || dayNumber === 16 ? 'warning' : 'highlight'}">${NumerologySystem.analyzeSituation(lifePath, destiny, dayNumber)}</span>`;
+        
+        const recommendations = NumerologySystem.getRecommendations(lifePath, destiny, dayNumber);
+        let recommendationsHTML = "<ul>";
+        recommendations.forEach(rec => {
+            recommendationsHTML += `<li>${rec}</li>`;
+        });
+        recommendationsHTML += "</ul>";
+        
+        document.getElementById('recommendations').innerHTML = recommendationsHTML;
+    }
+    </script>
+</body>
+</html>

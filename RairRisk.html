@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RailRisk - Космический анализ риска поездки</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Orbitron', 'Segoe UI', sans-serif;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(125deg, #0b0b2b, #1a1a40, #0d0d26);
+            color: #e0e0ff;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Анимация звездного неба */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 5s) infinite ease-in-out;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .container {
+            background: rgba(10, 15, 40, 0.85);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(65, 105, 225, 0.5),
+                        0 0 60px rgba(30, 144, 255, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 149, 237, 0.3);
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            margin: 40px auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #e0e0ff;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 0 0 15px rgba(224, 224, 255, 0.7);
+            letter-spacing: 2px;
+            position: relative;
+            padding-bottom: 15px;
+            font-weight: 700;
+        }
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(224, 224, 255, 0.7), transparent);
+        }
+        
+        .train-icon {
+            display: block;
+            margin: 0 auto 20px;
+            width: 80px;
+            height: 80px;
+            background: rgba(224, 224, 255, 0.2);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 0 20px rgba(224, 224, 255, 0.5);
+            animation: pulse 3s infinite;
+        }
+        .train-icon::before {
+            content: '🚆';
+            font-size: 40px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 10px rgba(224, 224, 255, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(224, 224, 255, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(224, 224, 255, 0.5); }
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #e0e0ff;
+            font-size: 1.1rem;
+            text-shadow: 0 0 5px rgba(224, 224, 255, 0.5);
+        }
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(25, 35, 70, 0.7);
+            border: 1px solid rgba(224, 224, 255, 0.5);
+            border-radius: 6px;
+            font-size: 16px;
+            color: #e0e0ff;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px rgba(224, 224, 255, 0.5);
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: rgba(224, 224, 255, 0.8);
+            box-shadow: 0 0 15px rgba(224, 224, 255, 0.5);
+        }
+        
+        button {
+            background: rgba(25, 35, 70, 0.5);
+            color: #e0e0ff;
+            border: 1px solid rgba(224, 224, 255, 0.5);
+            padding: 14px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            text-shadow: 0 0 5px rgba(224, 224, 255, 0.5);
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 5px rgba(224, 224, 255, 0.5),
+                            0 0 10px rgba(224, 224, 255, 0.3);
+            }
+            to {
+                box-shadow: 0 0 15px rgba(224, 224, 255, 0.8),
+                            0 0 30px rgba(224, 224, 255, 0.5);
+            }
+        }
+        
+        button:hover {
+            background: rgba(35, 45, 80, 0.7);
+            transform: translateY(-3px);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .button-group button {
+            flex: 1;
+        }
+        
+        .progress-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(25, 35, 70, 0.5);
+            border-radius: 10px;
+            border: 1px solid rgba(224, 224, 255, 0.5);
+        }
+        progress {
+            width: 100%;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: rgba(25, 35, 70, 0.7);
+            border: 1px solid rgba(224, 224, 255, 0.5);
+        }
+        progress::-webkit-progress-bar {
+            background: rgba(25, 35, 70, 0.7);
+            border-radius: 15px;
+        }
+        progress::-webkit-progress-value {
+            background: linear-gradient(90deg, 
+                rgba(50, 205, 50, 0.3), 
+                rgba(255, 215, 0, 0.3), 
+                rgba(255, 69, 0, 0.3));
+            border-radius: 15px;
+            transition: width 1s ease;
+            box-shadow: 0 0 10px rgba(224, 224, 255, 0.5);
+        }
+        progress::-moz-progress-bar {
+            background: linear-gradient(90deg, 
+                rgba(50, 205, 50, 0.3), 
+                rgba(255, 215, 0, 0.3), 
+                rgba(255, 69, 0, 0.3));
+            border-radius: 15px;
+        }
+        .risk-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        .risk-label {
+            font-size: 16px;
+            color: #e0e0ff;
+            text-shadow: 0 0 5px rgba(224, 224, 255, 0.5);
+        }
+        .warning {
+            color: #e0e0ff;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(224, 224, 255, 0.8);
+        }
+        .success {
+            color: #e0e0ff;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(224, 224, 255, 0.8);
+        }
+        .section-title {
+            background: linear-gradient(90deg, transparent, rgba(65, 105, 225, 0.3), transparent);
+            padding: 12px 20px;
+            margin: 30px 0 15px 0;
+            border-radius: 6px;
+            font-weight: bold;
+            color: #e0e0ff;
+            text-align: center;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(224, 224, 255, 0.7);
+            border: 1px solid rgba(224, 224, 255, 0.3);
+        }
+        
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 20px;
+            background: rgba(25, 35, 70, 0.7);
+            border: 1px solid rgba(224, 224, 255, 0.5);
+            border-radius: 10px;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #e0e0ff;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 5px rgba(224, 224, 255, 0.5);
+        }
+        
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            z-index: 0;
+            box-shadow: 0 0 30px rgba(224, 224, 255, 0.3);
+        }
+        #planet1 {
+            width: 150px;
+            height: 150px;
+            top: 50px;
+            right: 50px;
+            background: radial-gradient(circle at 30% 30%, rgba(106, 90, 205, 0.5), rgba(72, 61, 139, 0.3));
+            animation: float 8s infinite ease-in-out;
+        }
+        #planet2 {
+            width: 100px;
+            height: 100px;
+            bottom: 80px;
+            left: 40px;
+            background: radial-gradient(circle at 30% 30%, rgba(65, 105, 225, 0.5), rgba(25, 25, 112, 0.3));
+            animation: float 10s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        .satellite {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(173, 216, 230, 0.7);
+            box-shadow: 0 0 10px rgba(173, 216, 230, 0.7);
+            z-index: 0;
+            animation: orbit 15s linear infinite;
+        }
+        
+        @keyframes orbit {
+            from { transform: rotate(0deg) translateX(100px) rotate(0deg); }
+            to { transform: rotate(360deg) translateX(100px) rotate(-360deg); }
+        }
+        
+        .satellite:nth-child(2) {
+            animation: orbit-reverse 12s linear infinite;
+        }
+        
+        @keyframes orbit-reverse {
+            from { transform: rotate(0deg) translateX(70px) rotate(0deg); }
+            to { transform: rotate(-360deg) translateX(70px) rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+            #planet1, #planet2 {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Анимированные звезды -->
+    <div class="stars" id="stars-container"></div>
+    
+    <!-- Декоративные планеты -->
+    <div class="planet" id="planet1"></div>
+    <div class="planet" id="planet2"></div>
+    
+    <!-- Декоративные спутники -->
+    <div class="satellite" id="satellite1"></div>
+    <div class="satellite" id="satellite2"></div>
+    
+    <div class="container">
+        <div class="train-icon"></div>
+        <h1>RAILRISK - КОСМИЧЕСКИЙ АНАЛИЗ РИСКА ПОЕЗДКИ</h1>
+        
+        <div class="form-grid">
+            <!-- Левая колонка -->
+            <div>
+                <div class="form-group">
+                    <label for="fio">ФИО ПАССАЖИРА:</label>
+                    <input type="text" id="fio" value="Иванов Иван Иванович">
+                </div>
+                
+                <div class="form-group">
+                    <label for="birthDate">ДАТА РОЖДЕНИЯ:</label>
+                    <input type="date" id="birthDate" value="1980-01-15">
+                </div>
+                
+                <div class="form-group">
+                    <label for="sex">ПОЛ:</label>
+                    <select id="sex">
+                        <option value="МУЖСКОЙ">Мужской</option>
+                        <option value="ЖЕНСКИЙ">Женский</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="departureCity">СТАНЦИЯ ОТПРАВЛЕНИЯ:</label>
+                    <input type="text" id="departureCity" value="Москва">
+                </div>
+                
+                <div class="form-group">
+                    <label for="arrivalCity">СТАНЦИЯ НАЗНАЧЕНИЯ:</label>
+                    <input type="text" id="arrivalCity" value="Санкт-Петербург">
+                </div>
+            </div>
+            
+            <!-- Правая колонка -->
+            <div>
+                <div class="form-group">
+                    <label for="departureDate">ДАТА ОТПРАВЛЕНИЯ:</label>
+                    <input type="date" id="departureDate" value="2023-10-15">
+                </div>
+                
+                <div class="form-group">
+                    <label for="departureTime">ВРЕМЯ ОТПРАВЛЕНИЯ:</label>
+                    <input type="time" id="departureTime" value="12:30">
+                </div>
+                
+                <div class="form-group">
+                    <label for="trainNumber">НОМЕР ПОЕЗДА:</label>
+                    <input type="text" id="trainNumber" value="012А">
+                </div>
+                
+                <div class="form-group">
+                    <label for="carriageSeat">НОМЕР ВАГОНА И МЕСТА:</label>
+                    <input type="text" id="carriageSeat" value="07-15">
+                </div>
+                
+                <div class="form-group">
+                    <label for="railway">ЖЕЛЕЗНАЯ ДОРОГА:</label>
+                    <input type="text" id="railway" value="РЖД">
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button id="calculateBtn">РАССЧИТАТЬ РИСК</button>
+            <button id="saveBtn">СОХРАНИТЬ ДАННЫЕ</button>
+            <button id="loadBtn">ЗАГРУЗИТЬ ДАННЫЕ</button>
+        </div>
+        
+        <div class="progress-container">
+            <label>УРОВЕНЬ КОСМИЧЕСКОГО РИСКА:</label>
+            <progress id="riskProgress" max="100" value="0"></progress>
+            <div class="risk-indicator">
+                <span class="risk-label">БЕЗОПАСНО</span>
+                <span class="risk-label">КРИТИЧЕСКИЙ РИСК</span>
+            </div>
+        </div>
+        
+        <div class="section-title">РЕЗУЛЬТАТЫ КОСМИЧЕСКОГО АНАЛИЗА:</div>
+        <textarea id="resultArea" readonly></textarea>
+    </div>
+
+    <script>
+        // Создание звездного неба
+        function createStars() {
+            const starsContainer = document.getElementById('stars-container');
+            const starCount = 300;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Случайный размер звезды
+                const size = Math.random() * 3;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // Случайная позиция
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // Случайная длительность анимации
+                star.style.setProperty('--duration', `${Math.random() * 5 + 3}s`);
+                
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // Позиционирование спутников
+        function positionSatellites() {
+            const satellite1 = document.getElementById('satellite1');
+            const satellite2 = document.getElementById('satellite2');
+            
+            // Центр орбиты для первого спутника (планета1)
+            const planet1 = document.getElementById('planet1');
+            const rect1 = planet1.getBoundingClientRect();
+            const centerX1 = rect1.left + rect1.width/2;
+            const centerY1 = rect1.top + rect1.height/2;
+            
+            // Центр орбиты для второго спутника (планета2)
+            const planet2 = document.getElementById('planet2');
+            const rect2 = planet2.getBoundingClientRect();
+            const centerX2 = rect2.left + rect2.width/2;
+            const centerY2 = rect2.top + rect2.height/2;
+            
+            // Позиционируем спутники на начальные позиции орбит
+            satellite1.style.left = `${centerX1 + 100}px`;
+            satellite1.style.top = `${centerY1}px`;
+            
+            satellite2.style.left = `${centerX2 + 70}px`;
+            satellite2.style.top = `${centerY2}px`;
+        }
+        
+        // Инициализация анимации
+        window.addEventListener('load', () => {
+            createStars();
+            positionSatellites();
+        });
+
+        // Константы для расчетов
+        const WidowYears21 = [2001,2005,2009,2013,2017,2021,2025,2029,2033,2037,2041,2045,2049,2053,2057,2061,2065,2069,2073,2077,2081,2085,2089,2093,2097];
+        const WidowerYears21 = [2002,2006,2010,2014,2018,2022,2026,2030,2034,2038,2042,2046,2050,2054,2058,2062,2066,2070,2074,2078,2082,2086,2090,2094,2098];
+        const TzolkinDayNames = [
+            'Imix (Имиш) - Дракон', 'Ik (Ик) - Ветер', 'Akbal (Акбаль) - Ночь', 'Kan (Кан) - Семя',
+            'Chicchan (Чикчан) - Змея', 'Cimi (Кими) - Смерть', 'Manik (Маник) - Рука', 'Lamat (Ламат) - Кролик',
+            'Muluc (Мулук) - Вода', 'Oc (Ок) - Собака', 'Chuen (Чуэн) - Обезьяна', 'Eb (Эб) - Путь',
+            'Ben (Бен) - Кукуруза', 'Ix (Иш) - Ягуар', 'Men (Мен) - Орел', 'Cib (Киб) - Сова',
+            'Caban (Кабан) - Земля', 'Etznab (Эцнаб) - Кремень', 'Cauac (КАУАК) - Буря', 'Ahau (Ахау) - Солнце'
+        ];
+        const HaabMonthNames = [
+            'Pop', 'Wo', 'Zip', 'Zotz', 'Tzec', 'Xul', 'Yaxkin', 'Mol', 'Chen', 'Yax',
+            'Sac', 'Ceh', 'Mac', 'Kankin', 'Muan', 'Pax', 'Kayab', 'Cumku', 'Uayeb'
+        ];
+        const SunSignRanges = [
+            {month: 1, day: 20, sign: 'Водолей'},
+            {month: 2, day: 19, sign: 'Рыбы'},
+            {month: 3, day: 21, sign: 'Овен'},
+            {month: 4, day: 20, sign: 'Телец'},
+            {month: 5, day: 21, sign: 'Близнецы'},
+            {month: 6, day: 21, sign: 'Рак'},
+            {month: 7, day: 23, sign: 'Лев'},
+            {month: 8, day: 23, sign: 'Дева'},
+            {month: 9, day: 23, sign: 'Весы'},
+            {month: 10, day: 23, sign: 'Скорпион'},
+            {month: 11, day: 22, sign: 'Стрелец'},
+            {month: 12, day: 22, sign: 'Козерог'}
+        ];
+
+        // Базовые даты для календаря Майя
+        const CorrelationBaseDate = new Date(2012, 7, 11); // 11 августа 2012
+        const CorrelationBaseTzolkinNum = 8; // 8 Ahau
+        const CorrelationBaseTzolkinNameIndex = 19; // Ahau
+        const CorrelationBaseHaabMonthIndex = 17; // Kankin
+        const CorrelationBaseHaabDay = 18; // 18 Kankin
+
+        // Константы для расчета фазы Луны
+        const SynodicMonth = 29.530588; // дней в лунном цикле
+        const RefNewMoonDate = new Date(2000, 0, 6); // 6 января 2000 (новолуние)
+
+        // DOM элементы
+        const calculateBtn = document.getElementById('calculateBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const loadBtn = document.getElementById('loadBtn');
+        const riskProgress = document.getElementById('riskProgress');
+        const resultArea = document.getElementById('resultArea');
+
+        // Основная функция расчета
+        calculateBtn.addEventListener('click', () => {
+            try {
+                // Получение значений из формы
+                const fio = document.getElementById('fio').value;
+                const birthDate = new Date(document.getElementById('birthDate').value);
+                const departureDate = new Date(document.getElementById('departureDate').value);
+                const departureTime = document.getElementById('departureTime').value;
+                const sex = document.getElementById('sex').value;
+                const departureCity = document.getElementById('departureCity').value;
+                const arrivalCity = document.getElementById('arrivalCity').value;
+                
+                // Проверка обязательных полей
+                if (!fio) {
+                    resultArea.value = 'Пожалуйста, введите ФИО.';
+                    riskProgress.value = 0;
+                    return;
+                }
+                
+                // Расчет нумерологических чисел
+                const lifePathNumber = calculateLifePathNumber(birthDate);
+                const expressionNumber = calculateExpressionNumber(fio);
+                const soulNumber = calculateSoulNumber(fio);
+                const personalityNumber = calculatePersonalityNumber(fio);
+                const personalYearNumber = calculatePersonalYearNumber(birthDate, departureDate);
+                const dailyNumber = calculateDailyNumber(departureDate);
+                const birthDayNumber = calculateBirthDayNumber(birthDate);
+                const maturityNumber = calculateMaturityNumber(lifePathNumber, expressionNumber);
+                const timeNumber = calculateTimeNumber(departureTime);
+                const departureCityExpression = calculateCityExpression(departureCity);
+                const arrivalCityExpression = calculateCityExpression(arrivalCity);
+                
+                // Расчет факторов риска
+                const tzolkinDate = gregorianToTzolkin(departureDate);
+                const mayaRisk = getTzolkinDayRisk(tzolkinDate.dayName);
+                const haabDate = gregorianToHaab(departureDate);
+                const moonPhase = calculateMoonPhase(departureDate);
+                const moonRisk = getMoonPhaseRisk(moonPhase);
+                const sunSign = getSunSign(departureDate);
+                
+                // Расчет общего риска
+                let warningScore = mayaRisk + moonRisk;
+                warningScore += analyzeNumbers(dailyNumber, personalYearNumber, lifePathNumber, 
+                    timeNumber, departureCityExpression, arrivalCityExpression);
+                warningScore += analyzeSpecialYears(sex, departureDate.getFullYear());
+                
+                // Расчет процента риска
+                const riskPercentage = Math.min(Math.round((warningScore / 20) * 100), 100);
+                riskProgress.value = riskPercentage;
+                
+                // Формирование отчета
+                generateReport(
+                    lifePathNumber, expressionNumber, soulNumber, personalityNumber,
+                    personalYearNumber, dailyNumber, birthDayNumber, maturityNumber,
+                    timeNumber, departureCityExpression, arrivalCityExpression,
+                    tzolkinDate, haabDate, moonPhase, sunSign,
+                    warningScore, riskPercentage
+                );
+            } catch (e) {
+                resultArea.value = `Ошибка: ${e.message}`;
+                console.error(e);
+            }
+        });
+
+        // ======= ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =======
+
+        // Функция для получения нумерологического значения буквы
+        function getLetterValue(letter) {
+            if (!letter) return 0;
+            const upperLetter = letter.toUpperCase();
+            const letterMap = {
+                'A':1,'J':1,'S':1,'А':1,'И':1,'С':1,'Ъ':1,'Ь':1,'Я':1,
+                'B':2,'K':2,'T':2,'Б':2,'Й':2,'Т':2,'Ы':2,
+                'C':3,'L':3,'U':3,'В':3,'К':3,'У':3,'Э':3,
+                'D':4,'M':4,'V':4,'Г':4,'Л':4,'Ф':4,'Ю':4,
+                'E':5,'N':5,'W':5,'Д':5,'М':5,'Х':5,
+                'F':6,'O':6,'X':6,'Е':6,'Н':6,'Ц':6,
+                'G':7,'P':7,'Y':7,'Ж':7,'О':7,'Ч':7,
+                'H':8,'Q':8,'Z':8,'З':8,'П':8,'Ш':8,
+                'I':9,'R':9,'Р':9,'Щ':9,
+                'Ё':7
+            };
+            return letterMap[upperLetter] || 0;
+        }
+
+        // Сведение числа к одной цифре
+        function reduceToSingleDigit(num) {
+            if (num <= 0) return 0;
+            if ([11, 22, 33].includes(num)) return num;
+            
+            let sum = num;
+            while (sum > 9) {
+                sum = sum.toString().split('').reduce((acc, digit) => acc + parseInt(digit), 0);
+            }
+            return sum;
+        }
+
+        // Проверка на гласную
+        function isVowel(letter) {
+            const vowels = 'AEIOUYАЕЁИОУЫЭЮЯ';
+            return vowels.includes(letter.toUpperCase());
+        }
+
+        // Проверка на согласную
+        function isConsonant(letter) {
+            return getLetterValue(letter) > 0 && !isVowel(letter);
+        }
+
+        // Расчет числа выражения
+        function calculateExpressionNumber(name) {
+            let total = 0;
+            for (let i = 0; i < name.length; i++) {
+                total += getLetterValue(name[i]);
+            }
+            return reduceToSingleDigit(total);
+        }
+
+        // Расчет числа души
+        function calculateSoulNumber(name) {
+            let total = 0;
+            for (let i = 0; i < name.length; i++) {
+                if (isVowel(name[i])) {
+                    total += getLetterValue(name[i]);
+                }
+            }
+            return reduceToSingleDigit(total);
+        }
+
+        // Расчет числа личности
+        function calculatePersonalityNumber(name) {
+            let total = 0;
+            for (let i = 0; i < name.length; i++) {
+                if (isConsonant(name[i])) {
+                    total += getLetterValue(name[i]);
+                }
+            }
+            return reduceToSingleDigit(total);
+        }
+
+        // Расчет числа жизненного пути
+        function calculateLifePathNumber(date) {
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            
+            const dayNum = reduceToSingleDigit(day);
+            const monthNum = reduceToSingleDigit(month);
+            const yearNum = reduceToSingleDigit(
+                year.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0)
+            );
+            
+            return reduceToSingleDigit(dayNum + monthNum + yearNum);
+        }
+
+        // Расчет числа персонального года
+        function calculatePersonalYearNumber(birthDate, eventDate) {
+            const birthDay = birthDate.getDate();
+            const birthMonth = birthDate.getMonth() + 1;
+            const eventYear = eventDate.getFullYear();
+            
+            const yearSum = eventYear.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+            const reducedYear = reduceToSingleDigit(yearSum);
+            
+            return reduceToSingleDigit(birthMonth + birthDay + reducedYear);
+        }
+
+        // Расчет числа дня
+        function calculateDailyNumber(date) {
+            return calculateLifePathNumber(date);
+        }
+
+        // Расчет числа дня рождения
+        function calculateBirthDayNumber(date) {
+            return reduceToSingleDigit(date.getDate());
+        }
+
+        // Расчет числа зрелости
+        function calculateMaturityNumber(lifePath, expression) {
+            return reduceToSingleDigit(lifePath + expression);
+        }
+
+        // Расчет числа времени
+        function calculateTimeNumber(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return reduceToSingleDigit(hours + minutes);
+        }
+
+        // Расчет числа города
+        function calculateCityExpression(cityName) {
+            return calculateExpressionNumber(cityName);
+        }
+
+        // Конвертация в календарь Цолькин
+        function gregorianToTzolkin(eventDate) {
+            const diffDays = Math.floor((eventDate - CorrelationBaseDate) / (1000 * 60 * 60 * 24));
+            let dayNumber = (CorrelationBaseTzolkinNum - 1 + diffDays) % 13;
+            if (dayNumber < 0) dayNumber += 13;
+            dayNumber += 1;
+            
+            let nameIndex = (CorrelationBaseTzolkinNameIndex + diffDays) % 20;
+            if (nameIndex < 0) nameIndex += 20;
+            
+            return {
+                dayNumber: dayNumber,
+                dayName: TzolkinDayNames[nameIndex]
+            };
+        }
+
+        // Оценка риска по Цолькин
+        function getTzolkinDayRisk(dayName) {
+            const upperName = dayName.toUpperCase();
+            if (upperName.includes('CIMI') || upperName.includes('ETZNAB') || upperName.includes('CAUAC')) return 3;
+            if (upperName.includes('IK') || upperName.includes('CHUEN') || upperName.includes('EB') || 
+                upperName.includes('BEN') || upperName.includes('IX') || upperName.includes('CABAN')) return 2;
+            if (upperName.includes('CHICCHAN') || upperName.includes('MULUC')) return 1;
+            return 0;
+        }
+
+        // Конвертация в календарь Хааб
+        function gregorianToHaab(eventDate) {
+            const diffDays = Math.floor((eventDate - CorrelationBaseDate) / (1000 * 60 * 60 * 24));
+            const baseHaabDay = (CorrelationBaseHaabMonthIndex * 20 + CorrelationBaseHaabDay - 1);
+            let totalHaabDays = (baseHaabDay + diffDays) % 365;
+            if (totalHaabDays < 0) totalHaabDays += 365;
+            
+            if (totalHaabDays < 360) {
+                const monthIndex = Math.floor(totalHaabDays / 20);
+                return {
+                    day: (totalHaabDays % 20) + 1,
+                    monthName: HaabMonthNames[monthIndex]
+                };
+            } else {
+                return {
+                    day: totalHaabDays - 360 + 1,
+                    monthName: 'Uayeb'
+                };
+            }
+        }
+
+        // Детерминированный расчет фазы Луны
+        function calculateMoonPhase(date) {
+            const diffDays = (date - RefNewMoonDate) / (1000 * 60 * 60 * 24);
+            const position = diffDays % SynodicMonth;
+            const normalizedPosition = position < 0 ? position + SynodicMonth : position;
+
+            if (normalizedPosition < 1) return 'Новолуние';
+            if (normalizedPosition < 7) return 'Растущий полумесяц';
+            if (normalizedPosition < 8) return 'Первая четверть';
+            if (normalizedPosition < 14) return 'Прибывающая Луна';
+            if (normalizedPosition < 15) return 'Полнолуние';
+            if (normalizedPosition < 22) return 'Убывающая Луна';
+            if (normalizedPosition < 23) return 'Последняя четверть';
+            return 'Убывающий полумесяц';
+        }
+
+        // Оценка риска по фазе луны
+        function getMoonPhaseRisk(moonPhase) {
+            return ['Новолуние', 'Полнолуние'].includes(moonPhase) ? 1 : 0;
+        }
+
+        // Определение знака зодиака
+        function getSunSign(date) {
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            
+            for (const range of SunSignRanges) {
+                if (
+                    (month === range.month && day >= range.day) ||
+                    (month === range.month + 1 && day < range.day)
+                ) {
+                    return range.sign;
+                }
+            }
+            return 'Козерог';
+        }
+
+        // Анализ чисел и факторов риска
+        function analyzeNumbers(daily, personalYear, lifePath, timeNum, depCity, arrCity) {
+            let score = 0;
+            
+            // Анализ основных чисел
+            if ([4,8].includes(daily)) score += 2;
+            if ([4,8].includes(personalYear)) score += 2;
+            if ([7].includes(personalYear)) score += 2;
+            
+            // Конфликт энергий
+            if ([4,8].includes(lifePath) && [4,8].includes(daily)) score += 3;
+            if ([4,7,8].includes(personalYear) && [4,7,8].includes(daily)) score += 3;
+            
+            // Анализ чисел городов
+            if ([4,8,7].includes(depCity)) score += 1;
+            if ([4,8,7].includes(arrCity)) score += 1;
+            
+            return score;
+        }
+
+        // Анализ специальных годов
+        function analyzeSpecialYears(sex, year) {
+            if (sex === 'ЖЕНСКИЙ' && WidowYears21.includes(year)) return 5;
+            if (sex === 'МУЖСКОЙ' && WidowerYears21.includes(year)) return 5;
+            return 0;
+        }
+
+        // Генерация отчета
+        function generateReport(lifePath, expression, soul, personality, 
+                                personalYear, daily, birthDay, maturity,
+                                timeNum, depCity, arrCity,
+                                tzolkin, haab, moonPhase, sunSign,
+                                warningScore, riskPercent) {
+            let report = '--- 🌌 ВАШИ КОСМИЧЕСКИЕ ЧИСЛА ---\n';
+            report += `✨ Число Жизненного Пути: ${lifePath}\n`;
+            report += `✨ Число Экспрессии: ${expression}\n`;
+            report += `✨ Число Души: ${soul}\n`;
+            report += `✨ Число Личности: ${personality}\n`;
+            report += `✨ Число Дня Рождения: ${birthDay}\n`;
+            report += `✨ Число Зрелости: ${maturity}\n\n`;
+            
+            report += '--- 🚂 ФАКТОРЫ ПОЕЗДКИ ---\n';
+            report += `📅 Число Персонального Года: ${personalYear}\n`;
+            report += `📅 Число Дня поездки: ${daily}\n`;
+            report += `⏱️ Число Времени отправления: ${timeNum}\n`;
+            report += `🚉 Число станции отправления: ${depCity}\n`;
+            report += `🚉 Число станции назначения: ${arrCity}\n`;
+            report += `🌠 Дата Майя (Цолькин): ${tzolkin.dayNumber} ${tzolkin.dayName}\n`;
+            report += `🌠 Дата Майя (Хааб): ${haab.day} ${haab.monthName}\n`;
+            report += `🌙 Фаза Луны: ${moonPhase}\n`;
+            report += `☀️ Знак Зодиака: ${sunSign}\n\n`;
+            
+            report += '--- ⚠️ АНАЛИЗ РИСКОВ ---\n';
+            report += `🛡️ Общий балл риска: ${warningScore}/20\n`;
+            report += `📊 Процент риска: ${riskPercent}%\n\n`;
+            
+            report += '--- 📜 РЕКОМЕНДАЦИЯ ---\n';
+            if (riskPercent > 60) {
+                report += '🚫 ВНИМАНИЕ! ВЫСОКИЙ РИСК! Рекомендуется выбрать другой поезд или дату отправления';
+            } else if (riskPercent > 30) {
+                report += '⚠️ Средний уровень риска. Будьте внимательны во время поездки';
+            } else {
+                report += '✅ Низкий уровень риска. Приятной поездки!';
+            }
+            
+            resultArea.value = report;
+        }
+
+        // Функции сохранения/загрузки
+        saveBtn.addEventListener('click', () => {
+            const formData = {
+                fio: document.getElementById('fio').value,
+                birthDate: document.getElementById('birthDate').value,
+                sex: document.getElementById('sex').value,
+                departureDate: document.getElementById('departureDate').value,
+                departureTime: document.getElementById('departureTime').value,
+                departureCity: document.getElementById('departureCity').value,
+                arrivalCity: document.getElementById('arrivalCity').value,
+                trainNumber: document.getElementById('trainNumber').value,
+                carriageSeat: document.getElementById('carriageSeat').value,
+                railway: document.getElementById('railway').value,
+                riskPercent: riskProgress.value,
+                report: resultArea.value
+            };
+            
+            localStorage.setItem('trainRiskData', JSON.stringify(formData));
+            alert('ДАННЫЕ СОХРАНЕНЫ В КОСМИЧЕСКОЕ ХРАНИЛИЩЕ!');
+        });
+
+        loadBtn.addEventListener('click', () => {
+            const savedData = localStorage.getItem('trainRiskData');
+            if (!savedData) {
+                alert('НЕТ СОХРАНЕННЫХ ДАННЫХ В КОСМИЧЕСКОЙ ПАМЯТИ');
+                return;
+            }
+            
+            const formData = JSON.parse(savedData);
+            document.getElementById('fio').value = formData.fio || '';
+            document.getElementById('birthDate').value = formData.birthDate || '';
+            document.getElementById('sex').value = formData.sex || 'МУЖСКОЙ';
+            document.getElementById('departureDate').value = formData.departureDate || '';
+            document.getElementById('departureTime').value = formData.departureTime || '';
+            document.getElementById('departureCity').value = formData.departureCity || '';
+            document.getElementById('arrivalCity').value = formData.arrivalCity || '';
+            document.getElementById('trainNumber').value = formData.trainNumber || '';
+            document.getElementById('carriageSeat').value = formData.carriageSeat || '';
+            document.getElementById('railway').value = formData.railway || '';
+            riskProgress.value = formData.riskPercent || 0;
+            resultArea.value = formData.report || '';
+            
+            alert('ДАННЫЕ ЗАГРУЖЕНЫ ИЗ КОСМИЧЕСКОЙ ПАМЯТИ!');
+        });
+    </script>
+</body>
+</html>

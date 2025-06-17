@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Космическая Лила: Премиум-издание</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0032, #190061, #240090, #3500d3);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #fff;
+            border-radius: 50%;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        header {
+            text-align: center;
+            padding: 15px 0;
+            position: relative;
+            z-index: 10;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        h1 {
+            font-size: 3.2rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px #00eeff, 0 0 30px #0088ff;
+            background: linear-gradient(to right, #a18cd1, #fbc2eb, #8fd3f4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 3px;
+            animation: glow 3s infinite alternate;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+            text-shadow: 0 0 10px rgba(0, 238, 255, 0.7);
+        }
+
+        .game-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .board-container {
+            flex: 1;
+            min-width: 500px;
+            background: rgba(10, 10, 40, 0.1);
+            border-radius: 30px;
+            padding: 25px;
+            box-shadow: 0 0 50px rgba(100, 100, 255, 0.2);
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            animation: floatBoard 8s infinite ease-in-out;
+        }
+
+        .board {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            background: rgba(5, 5, 30, 0.1);
+            border-radius: 25px;
+            overflow: hidden;
+            border: 1px solid rgba(100, 100, 255, 0.2);
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            gap: 2px;
+            transform: rotateX(5deg) rotateY(5deg);
+            transform-style: preserve-3d;
+        }
+
+        .cell {
+            position: relative;
+            background: rgba(20, 20, 60, 0.15);
+            border: 1px solid rgba(80, 80, 200, 0.1);
+            transition: all 0.5s ease;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            box-shadow: inset 0 0 10px rgba(0, 238, 255, 0.1);
+        }
+
+        .cell:hover {
+            background: rgba(50, 50, 120, 0.25);
+            box-shadow: inset 0 0 20px rgba(0, 238, 255, 0.3);
+        }
+
+        .cell::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle, rgba(100, 100, 255, 0.1) 0%, transparent 70%);
+            z-index: 1;
+        }
+
+        .cell-number {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            z-index: 2;
+            text-shadow: 0 0 5px rgba(0, 238, 255, 0.7);
+        }
+
+        .cell.special {
+            background: radial-gradient(circle, rgba(255,107,107,0.2), rgba(192,57,43,0.3));
+            box-shadow: inset 0 0 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .cell.portal {
+            background: radial-gradient(circle, rgba(26,188,156,0.2), rgba(22,160,133,0.3));
+            box-shadow: inset 0 0 20px rgba(26, 188, 156, 0.4);
+        }
+
+        .cell.trap {
+            background: radial-gradient(circle, rgba(243,156,18,0.2), rgba(211,84,0,0.3));
+            box-shadow: inset 0 0 20px rgba(243, 156, 18, 0.4);
+        }
+
+        .cell.boost {
+            background: radial-gradient(circle, rgba(52,152,219,0.2), rgba(41,128,185,0.3));
+            box-shadow: inset 0 0 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .cell.final {
+            background: radial-gradient(circle, rgba(155,89,182,0.4), rgba(142,68,173,0.6));
+            animation: pulse 2s infinite;
+            box-shadow: inset 0 0 30px rgba(155, 89, 182, 0.6), 0 0 40px rgba(155, 89, 182, 0.5);
+        }
+
+        .cell-icon {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 24px;
+            opacity: 0.8;
+            color: rgba(255, 255, 255, 0.7);
+            z-index: 2;
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        .players-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .player {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            transition: all 0.8s ease;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 0 15px rgba(0,0,0,0.8);
+            box-shadow: 0 0 20px currentColor;
+            transform-style: preserve-3d;
+            animation: float 4s infinite ease-in-out;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .player.human {
+            background: radial-gradient(circle, #ff9d00, #ff5500);
+        }
+
+        .player-trail {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: 0.7;
+            z-index: 4;
+            filter: blur(2px);
+        }
+
+        .controls {
+            flex: 0 0 350px;
+            background: rgba(10, 10, 40, 0.2);
+            border-radius: 30px;
+            padding: 25px;
+            box-shadow: 0 0 40px rgba(100, 100, 255, 0.2);
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            backdrop-filter: blur(15px);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            transform-style: preserve-3d;
+            animation: floatControls 10s infinite ease-in-out;
+        }
+
+        .dice-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .dice-3d {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(15deg) rotateY(15deg) rotateZ(5deg);
+            transition: transform 1s ease;
+        }
+
+        .dice-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #1a1a4a, #2c2c6e);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            font-weight: bold;
+            color: #fff;
+            border: 2px solid #3498db;
+            box-shadow: 0 0 25px rgba(52, 152, 219, 0.7);
+            backface-visibility: hidden;
+            background: radial-gradient(circle, rgba(30,30,80,0.8), rgba(20,20,60,0.9));
+            overflow: hidden;
+        }
+
+        .dice-face::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: rotate(45deg);
+            animation: shine 5s infinite;
+        }
+
+        .dice-face i {
+            text-shadow: 0 0 15px rgba(0, 238, 255, 0.9);
+            font-size: 40px;
+        }
+
+        .dice-face.front { transform: translateZ(60px); }
+        .dice-face.back { transform: rotateY(180deg) translateZ(60px); }
+        .dice-face.right { transform: rotateY(90deg) translateZ(60px); }
+        .dice-face.left { transform: rotateY(-90deg) translateZ(60px); }
+        .dice-face.top { transform: rotateX(90deg) translateZ(60px); }
+        .dice-face.bottom { transform: rotateX(-90deg) translateZ(60px); }
+
+        .roll-btn {
+    background: rgba(30, 30, 70, 0.2) !important;
+    color: #00eeff !important;
+    border: 1px solid rgba(100, 100, 255, 0.5) !important;
+    padding: 15px 35px;
+    font-size: 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(30px);
+    backdrop-filter: blur(10px);
+    text-shadow: 0 0 10px rgba(0, 238, 255, 0.7);
+    box-shadow: 
+        0 0 15px rgba(0, 238, 255, 0.3),
+        inset 0 0 10px rgba(100, 100, 255, 0.2);
+}
+
+.roll-btn:hover {
+    transform: translateY(-5px) translateZ(30px);
+    box-shadow: 
+        0 0 30px rgba(0, 238, 255, 0.7),
+        inset 0 0 20px rgba(100, 100, 255, 0.4);
+    background: rgba(50, 50, 120, 0.3) !important;
+}
+
+.roll-btn:disabled {
+    background: rgba(20, 20, 50, 0.2) !important;
+    color: rgba(0, 238, 255, 0.3) !important;
+    cursor: not-allowed;
+    transform: translateZ(30px);
+    box-shadow: none;
+}
+
+.roll-btn::after {
+    content: "";
+    position: absolute;
+    top: -150%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom, 
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.8) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(45deg);
+    animation: weldShine 3s infinite;
+    opacity: 0.5;
+}
+
+@keyframes weldShine {
+    0% { transform: rotate(45deg) translateX(-100%); }
+    100% { transform: rotate(45deg) translateX(100%); }
+}
+
+        .players-info {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 15px;
+            background: rgba(30, 30, 70, 0.3);
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            transition: all 0.4s ease;
+            transform: translateZ(20px);
+            backdrop-filter: blur(5px);
+        }
+
+        .player-color {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            margin-right: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.7);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .current-turn {
+            background: rgba(100, 100, 255, 0.3);
+            border: 1px solid rgba(100, 100, 255, 0.7);
+            transform: scale(1.05) translateZ(20px);
+            animation: pulseBorder 2s infinite alternate;
+        }
+
+        .game-status {
+            text-align: center;
+            font-size: 1.4rem;
+            min-height: 40px;
+            padding: 15px;
+            border-radius: 15px;
+            background: rgba(30, 30, 70, 0.3);
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            transform: translateZ(25px);
+            backdrop-filter: blur(5px);
+            text-shadow: 0 0 10px rgba(0, 238, 255, 0.7);
+        }
+
+        .effects {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .effect-card {
+            background: rgba(30, 30, 70, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            transition: transform 0.4s ease;
+            transform: translateZ(15px);
+            backdrop-filter: blur(5px);
+        }
+
+        .effect-card:hover {
+            transform: translateY(-8px) translateZ(15px);
+        }
+
+        .effect-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        .effect-name {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .victory-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s;
+        }
+
+        .victory-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            max-width: 90%;
+            width: 600px;
+            border: 2px solid #00eeff;
+            box-shadow: 0 0 70px rgba(0, 238, 255, 0.7);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateX(10deg);
+            backdrop-filter: blur(10px);
+        }
+
+        .victory-title {
+            font-size: 3.5rem;
+            margin-bottom: 25px;
+            color: #00eeff;
+            text-shadow: 0 0 30px #00eeff;
+        }
+
+        .winner-name {
+            font-size: 3rem;
+            color: #ff9d00;
+            margin: 25px 0;
+            text-shadow: 0 0 25px #ff5500;
+        }
+
+        .restart-btn {
+            background: linear-gradient(to right, #00eeff, #0088ff);
+            color: white;
+            border: none;
+            padding: 18px 45px;
+            font-size: 1.4rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 35px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            box-shadow: 0 8px 30px rgba(0, 238, 255, 0.7);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            transform: translateZ(40px);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.08) translateZ(40px);
+            box-shadow: 0 12px 35px rgba(0, 238, 255, 0.9);
+        }
+
+        .restart-btn::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: rotate(45deg);
+            animation: shine 5s infinite;
+            opacity: 0.4;
+        }
+
+        .enlightenment {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #00eeff;
+            box-shadow: 0 0 80px 50px #00eeff;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+        }
+
+        .sound-control {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(30, 30, 70, 0.4);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(100, 100, 255, 0.5);
+            transform: translateZ(40px);
+            backdrop-filter: blur(5px);
+            font-size: 24px;
+        }
+
+        /* Звездные нити */
+        .star-thread {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #00eeff, transparent);
+            box-shadow: 0 0 10px #00eeff;
+            z-index: -1;
+            transform-origin: left center;
+        }
+
+        /* Анимации */
+        @keyframes glow {
+            0% { text-shadow: 0 0 20px #00eeff, 0 0 30px #0088ff; }
+            100% { text-shadow: 0 0 40px #00eeff, 0 0 60px #0088ff, 0 0 80px #0044ff; }
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(45deg) translate(-30%, -30%); }
+            100% { transform: rotate(45deg) translate(70%, 70%); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 30px #9b59b6; }
+            50% { transform: scale(1.05); box-shadow: 0 0 60px #9b59b6; }
+            100% { transform: scale(1); box-shadow: 0 0 30px #9b59b6; }
+        }
+
+        @keyframes enlightenment-grow {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(15); opacity: 0; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0); }
+        }
+
+        @keyframes moveStar {
+            from { transform: translateY(0) translateX(0); }
+            to { transform: translateY(-100vh) translateX(-20px); }
+        }
+
+        @keyframes diceRoll {
+            0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
+            25% { transform: rotateX(180deg) rotateY(90deg) rotateZ(45deg); }
+            50% { transform: rotateX(360deg) rotateY(180deg) rotateZ(90deg); }
+            75% { transform: rotateX(540deg) rotateY(270deg) rotateZ(135deg); }
+            100% { transform: rotateX(720deg) rotateY(360deg) rotateZ(180deg); }
+        }
+
+        @keyframes pulseBorder {
+            0% { box-shadow: 0 0 10px rgba(100, 100, 255, 0.5); }
+            100% { box-shadow: 0 0 30px rgba(100, 100, 255, 1); }
+        }
+
+        @keyframes floatBoard {
+            0% { transform: translateY(0) rotate(0.5deg); }
+            50% { transform: translateY(-20px) rotate(-0.5deg); }
+            100% { transform: translateY(0) rotate(0.5deg); }
+        }
+
+        @keyframes floatControls {
+            0% { transform: translateY(0) rotate(-0.5deg); }
+            50% { transform: translateY(15px) rotate(0.5deg); }
+            100% { transform: translateY(0) rotate(-0.5deg); }
+        }
+
+        @keyframes rotateSymbol {
+            0% { transform: rotate(0) scale(1); }
+            50% { transform: rotate(10deg) scale(1.1); }
+            100% { transform: rotate(0) scale(1); }
+        }
+
+        /* Мобильная адаптация */
+        @media (max-width: 992px) {
+            .game-area {
+                flex-direction: column;
+            }
+            
+            .board-container, .controls {
+                width: 100%;
+                min-width: auto;
+            }
+            
+            .board {
+                height: 500px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .board {
+                height: 400px;
+            }
+            
+            .player {
+                width: 40px;
+                height: 40px;
+                font-size: 22px;
+            }
+            
+            .dice-3d {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .dice-face {
+                font-size: 40px;
+            }
+            
+            .victory-title {
+                font-size: 2.5rem;
+            }
+            
+            .winner-name {
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .board {
+                height: 300px;
+            }
+            
+            .cell-number {
+                font-size: 10px;
+                top: 5px;
+                left: 5px;
+            }
+            
+            .cell-icon {
+                font-size: 18px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .dice-3d {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .dice-face i {
+                font-size: 30px;
+            }
+            
+            .roll-btn {
+                padding: 12px 25px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="starfield" id="starfield"></div>
+    
+    <div class="sound-control" id="soundControl">
+        <i class="fas fa-volume-up" id="soundIcon"></i>
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1>КОСМИЧЕСКАЯ ЛИЛА: ПРЕМИУМ</h1>
+            <p class="subtitle">Путешествие по галактике к просветлению. Бросайте звездный кубик, обходите ловушки и используйте порталы, чтобы первым достичь центра Вселенной!</p>
+        </header>
+        
+        <div class="game-area">
+            <div class="board-container">
+                <div class="board" id="gameBoard">
+                    <!-- Доска будет сгенерирована скриптом -->
+                </div>
+                <div class="players-container" id="playersContainer"></div>
+            </div>
+            
+            <div class="controls">
+                <div class="dice-container">
+                    <div class="dice-3d" id="dice3D">
+                        <div class="dice-face front"><i class="fas fa-star"></i></div>
+                        <div class="dice-face back"><i class="fas fa-moon"></i></div>
+                        <div class="dice-face right"><i class="fas fa-sun"></i></div>
+                        <div class="dice-face left"><i class="fas fa-comet"></i></div>
+                        <div class="dice-face top"><i class="fas fa-infinity"></i></div>
+                        <div class="dice-face bottom"><i class="fas fa-atom"></i></div>
+                    </div>
+                    <button class="roll-btn" id="rollBtn">БРОСИТЬ КУБИК</button>
+                </div>
+                
+                <div class="game-status" id="gameStatus">Ваш ход! Бросайте кубик</div>
+                
+                <div class="players-info" id="playersInfo">
+                    <!-- Player info will be generated here -->
+                </div>
+                
+                <div class="effects">
+                    <div class="effect-card">
+                        <div class="effect-icon"><i class="fas fa-black-hole" style="color: #ff6b6b;"></i></div>
+                        <div class="effect-name">Чёрная дыра: -2 хода</div>
+                    </div>
+                    <div class="effect-card">
+                        <div class="effect-icon"><i class="fas fa-rocket" style="color: #3498db;"></i></div>
+                        <div class="effect-name">Ускорение: +3 хода</div>
+                    </div>
+                    <div class="effect-card">
+                        <div class="effect-icon"><i class="fas fa-door-open" style="color: #1abc9c;"></i></div>
+                        <div class="effect-name">Портал: телепорт</div>
+                    </div>
+                    <div class="effect-card">
+                        <div class="effect-icon"><i class="fas fa-hourglass-half" style="color: #f1c40f;"></i></div>
+                        <div class="effect-name">Пропуск хода</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="victory-overlay" id="victoryOverlay">
+        <div class="victory-content">
+            <div class="victory-title">ПРОСВЕТЛЕНИЕ</div>
+            <i class="fas fa-crown" style="font-size: 6rem; color: gold; margin: 25px 0;"></i>
+            <div>Победитель:</div>
+            <div class="winner-name" id="winnerName">Игрок</div>
+            <p style="font-size: 1.2rem; margin-top: 20px;">Достиг центра Вселенной и обрел космическое просветление!</p>
+            <button class="restart-btn" id="restartBtn">ИГРАТЬ СНОВА</button>
+            <div class="enlightenment" id="enlightenment"></div>
+        </div>
+    </div>
+
+    <!-- Audio elements -->
+    <audio id="backgroundMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="diceRollSound">
+        <source src="https://www.soundjay.com/buttons/sounds/button-20.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="moveSound">
+        <source src="https://www.soundjay.com/buttons/sounds/button-19.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="trapSound">
+        <source src="https://www.soundjay.com/buttons/sounds/button-42.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="boostSound">
+        <source src="https://www.soundjay.com/buttons/sounds/button-09a.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="portalSound">
+        <source src="https://www.soundjay.com/buttons/sounds/button-14.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="victorySound">
+        <source src="https://soundbank.one/wp-content/uploads/sound/Sound_09850_Organspace.ogg" type="audio/ogg">
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Создание звездного фона
+            function createStarfield() {
+                const starfield = document.getElementById('starfield');
+                const starCount = 400;
+                
+                for (let i = 0; i < starCount; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    
+                    // Позиция и размер
+                    const size = Math.random() * 3;
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+                    star.style.left = `${Math.random() * 100}%`;
+                    star.style.top = `${Math.random() * 100}%`;
+                    
+                    // Яркость
+                    const brightness = 0.5 + Math.random() * 0.5;
+                    star.style.opacity = brightness;
+                    
+                    // Анимация
+                    const duration = 50 + Math.random() * 100;
+                    const delay = Math.random() * 5;
+                    star.style.animation = `moveStar ${duration}s linear ${delay}s infinite`;
+                    
+                    starfield.appendChild(star);
+                }
+            }
+            
+            createStarfield();
+
+            // Создание звездных нитей
+            function createStarThreads() {
+                const container = document.querySelector('.board-container');
+                for (let i = 0; i < 20; i++) {
+                    const thread = document.createElement('div');
+                    thread.className = 'star-thread';
+                    
+                    const length = 50 + Math.random() * 200;
+                    const angle = Math.random() * 360;
+                    const left = Math.random() * 100;
+                    const top = Math.random() * 100;
+                    
+                    thread.style.width = `${length}px`;
+                    thread.style.left = `${left}%`;
+                    thread.style.top = `${top}%`;
+                    thread.style.transform = `rotate(${angle}deg)`;
+                    thread.style.opacity = 0.2 + Math.random() * 0.3;
+                    
+                    container.appendChild(thread);
+                }
+            }
+            
+            createStarThreads();
+
+            // Аудио элементы
+            const audio = {
+                backgroundMusic: document.getElementById('backgroundMusic'),
+                diceRoll: document.getElementById('diceRollSound'),
+                move: document.getElementById('moveSound'),
+                trap: document.getElementById('trapSound'),
+                boost: document.getElementById('boostSound'),
+                portal: document.getElementById('portalSound'),
+                victory: document.getElementById('victorySound')
+            };
+            
+            // Звуковые настройки
+            let soundEnabled = true;
+            
+            // Конфигурация игры
+            const config = {
+                totalCells: 72,
+                boardRows: 8,
+                boardCols: 9,
+                specialCells: {
+                    5: { type: 'trap', name: 'Чёрная дыра', effect: -2, sound: 'trap', icon: 'fas fa-black-hole' },
+                    12: { type: 'skip', name: 'Тёмная материя', effect: 1, sound: 'trap', icon: 'fas fa-moon' },
+                    19: { type: 'portal', name: 'Космический портал', effect: [30, 45], sound: 'portal', icon: 'fas fa-door-open' },
+                    25: { type: 'boost', name: 'Сверхсветовой двигатель', effect: 3, sound: 'boost', icon: 'fas fa-rocket' },
+                    33: { type: 'trap', name: 'Гравитационная аномалия', effect: -3, sound: 'trap', icon: 'fas fa-magnet' },
+                    40: { type: 'portal', name: 'Квантовый тоннель', effect: [10, 55], sound: 'portal', icon: 'fas fa-door-open' },
+                    48: { type: 'boost', name: 'Гиперпрыжок', effect: 4, sound: 'boost', icon: 'fas fa-rocket' },
+                    56: { type: 'trap', name: 'Звездный шторм', effect: -4, sound: 'trap', icon: 'fas fa-wind' },
+                    63: { type: 'skip', name: 'Нейтронная звезда', effect: 1, sound: 'trap', icon: 'fas fa-star' },
+                    70: { type: 'portal', name: 'Врата вселенной', effect: [68, 71], sound: 'portal', icon: 'fas fa-door-open' }
+                },
+                botNames: [
+                    'Арджуна', 'Кришна', 'Шива', 'Вишну', 'Брахма', 
+                    'Ганеша', 'Кали', 'Лакшми', 'Сарасвати', 'Хануман',
+                    'Агни', 'Варуна', 'Индра', 'Сурья', 'Чандра'
+                ],
+                botThinkingTime: { min: 1000, max: 3000 },
+                vedicSymbols: [
+                    'fas fa-om', 'fas fa-yin-yang', 'fas fa-star-of-david',
+                    'fas fa-infinity', 'fas fa-atom', 'fas fa-sun',
+                    'fas fa-moon', 'fas fa-spa', 'fas fa-feather-alt'
+                ]
+            };
+
+            // Состояние игры
+            const gameState = {
+                players: [],
+                currentPlayerIndex: 0,
+                isRolling: false,
+                gameActive: true,
+                totalPlayers: 4,
+                cellPositions: {}
+            };
+
+            // Элементы DOM
+            const elements = {
+                gameBoard: document.getElementById('gameBoard'),
+                playersContainer: document.getElementById('playersContainer'),
+                dice3D: document.getElementById('dice3D'),
+                rollBtn: document.getElementById('rollBtn'),
+                gameStatus: document.getElementById('gameStatus'),
+                playersInfo: document.getElementById('playersInfo'),
+                victoryOverlay: document.getElementById('victoryOverlay'),
+                winnerName: document.getElementById('winnerName'),
+                restartBtn: document.getElementById('restartBtn'),
+                enlightenment: document.getElementById('enlightenment'),
+                soundControl: document.getElementById('soundControl'),
+                soundIcon: document.getElementById('soundIcon')
+            };
+
+            // Управление звуком
+            elements.soundControl.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                elements.soundIcon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+                
+                if (soundEnabled) {
+                    audio.backgroundMusic.volume = 0.3;
+                    audio.backgroundMusic.play().catch(e => console.log("Автовоспроизведение заблокировано"));
+                } else {
+                    audio.backgroundMusic.pause();
+                }
+            });
+
+            // Инициализация игры
+            function initGame() {
+                createPlayers();
+                generateBoard();
+                renderPlayers();
+                renderPlayersInfo();
+                updateGameStatus();
+                elements.rollBtn.addEventListener('click', rollDice);
+                elements.restartBtn.addEventListener('click', restartGame);
+                
+                // Запуск фоновой музыки
+                if (soundEnabled) {
+                    audio.backgroundMusic.volume = 0.3;
+                    audio.backgroundMusic.play().catch(e => console.log("Автовоспроизведение заблокировано"));
+                }
+            }
+
+            // Создание игроков
+            function createPlayers() {
+                // Игрок-человек
+                gameState.players.push({
+                    id: 0,
+                    name: 'Вы',
+                    position: 0,
+                    color: '#ff6b6b',
+                    symbol: config.vedicSymbols[0],
+                    isHuman: true,
+                    skipTurns: 0,
+                    trail: []
+                });
+
+                // Боты
+                for (let i = 1; i < gameState.totalPlayers; i++) {
+                    const name = config.botNames[Math.floor(Math.random() * config.botNames.length)];
+                    gameState.players.push({
+                        id: i,
+                        name: name,
+                        position: 0,
+                        color: getRandomColor(),
+                        symbol: config.vedicSymbols[i % config.vedicSymbols.length],
+                        isHuman: false,
+                        skipTurns: 0,
+                        trail: []
+                    });
+                }
+            }
+
+            // Генерация квадратной доски
+            function generateBoard() {
+                elements.gameBoard.innerHTML = '';
+                gameState.cellPositions = {};
+                
+                // Создаем доску с змейкой
+                let currentCell = 0;
+                for (let row = 0; row < config.boardRows; row++) {
+                    for (let col = 0; col < config.boardCols; col++) {
+                        const cellIndex = row % 2 === 0 ? 
+                            row * config.boardCols + col : 
+                            (row + 1) * config.boardCols - col - 1;
+                        
+                        if (cellIndex >= config.totalCells) continue;
+                        
+                        const cell = document.createElement('div');
+                        cell.className = 'cell';
+                        cell.dataset.index = cellIndex;
+                        
+                        // Добавляем номер клетки
+                        const cellNumber = document.createElement('div');
+                        cellNumber.className = 'cell-number';
+                        cellNumber.textContent = cellIndex + 1;
+                        cell.appendChild(cellNumber);
+                        
+                        // Определяем специальные клетки
+                        if (config.specialCells[cellIndex]) {
+                            cell.classList.add(config.specialCells[cellIndex].type);
+                            cell.title = config.specialCells[cellIndex].name;
+                            
+                            // Добавляем иконку
+                            const icon = document.createElement('i');
+                            icon.className = `${config.specialCells[cellIndex].icon} cell-icon`;
+                            cell.appendChild(icon);
+                        }
+                        
+                        // Финишная клетка
+                        if (cellIndex === config.totalCells - 1) {
+                            cell.classList.add('final');
+                            cell.title = 'Центр Вселенной';
+                            const icon = document.createElement('i');
+                            icon.className = 'fas fa-infinity cell-icon';
+                            cell.appendChild(icon);
+                        }
+                        
+                        // Сохраняем позицию для игроков
+                        gameState.cellPositions[cellIndex] = {
+                            row: row,
+                            col: col
+                        };
+                        
+                        elements.gameBoard.appendChild(cell);
+                        currentCell++;
+                    }
+                }
+            }
+
+            // Отображение фишек игроков
+            function renderPlayers() {
+                elements.playersContainer.innerHTML = '';
+                
+                gameState.players.forEach(player => {
+                    // Очищаем старые следы
+                    player.trail.forEach(trail => trail.remove());
+                    player.trail = [];
+                    
+                    const playerElement = document.createElement('div');
+                    playerElement.className = `player ${player.isHuman ? 'human' : ''}`;
+                    playerElement.style.backgroundColor = player.color;
+                    playerElement.style.boxShadow = `0 0 25px ${player.color}`;
+                    
+                    const symbol = document.createElement('i');
+                    symbol.className = `${player.symbol} player-symbol`;
+                    symbol.style.color = player.isHuman ? '#fff' : player.color;
+                    symbol.style.animation = 'rotateSymbol 3s infinite ease-in-out';
+                    playerElement.appendChild(symbol);
+                    
+                    const position = gameState.cellPositions[player.position];
+                    if (position) {
+                        const cells = document.querySelectorAll('.cell');
+                        const cellIndex = position.row * config.boardCols + position.col;
+                        if (cellIndex < cells.length) {
+                            const cell = cells[cellIndex];
+                            const rect = cell.getBoundingClientRect();
+                            const boardRect = elements.gameBoard.getBoundingClientRect();
+                            
+                            const left = rect.left - boardRect.left + rect.width / 2 - 25;
+                            const top = rect.top - boardRect.top + rect.height / 2 - 25;
+                            
+                            playerElement.style.left = `${left}px`;
+                            playerElement.style.top = `${top}px`;
+                            
+                            // Создаем след за игроком
+                            createPlayerTrail(player, left, top);
+                        }
+                    }
+                    
+                    elements.playersContainer.appendChild(playerElement);
+                });
+            }
+
+            // Создание следа за игроком
+            function createPlayerTrail(player, x, y) {
+                // Создаем 5 следов
+                for (let i = 0; i < 5; i++) {
+                    const trail = document.createElement('div');
+                    trail.className = 'player-trail';
+                    trail.style.backgroundColor = player.color;
+                    trail.style.left = `${x - 30 + Math.random() * 60}px`;
+                    trail.style.top = `${y - 30 + Math.random() * 60}px`;
+                    trail.style.opacity = 0.6 - (i * 0.1);
+                    trail.style.transform = `scale(${0.4 + (i * 0.2)})`;
+                    trail.style.animation = `float ${3 + i}s infinite ease-in-out`;
+                    
+                    elements.playersContainer.appendChild(trail);
+                    player.trail.push(trail);
+                }
+            }
+
+            // Обновление информации об игроках
+            function renderPlayersInfo() {
+                elements.playersInfo.innerHTML = '';
+                
+                gameState.players.forEach((player, index) => {
+                    const playerInfo = document.createElement('div');
+                    playerInfo.className = `player-info ${index === gameState.currentPlayerIndex ? 'current-turn' : ''}`;
+                    
+                    playerInfo.innerHTML = `
+                        <div class="player-color" style="background: ${player.color}"></div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 1.1rem; font-weight: 500;">${player.name}</div>
+                            <div style="font-size: 0.9rem; opacity: 0.8; margin-top: 5px;">
+                                <i class="${player.symbol}"></i> Позиция: ${player.position + 1}
+                            </div>
+                        </div>
+                        ${player.skipTurns > 0 ? `<div style="color: #ff6b6b; font-size: 1.1rem;">⏱️ ${player.skipTurns}</div>` : ''}
+                    `;
+                    
+                    elements.playersInfo.appendChild(playerInfo);
+                });
+            }
+
+            // Обновление статуса игры
+            function updateGameStatus() {
+                const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+                
+                if (currentPlayer.skipTurns > 0) {
+                    elements.gameStatus.textContent = `${currentPlayer.name} пропускает ход`;
+                    setTimeout(() => nextTurn(), 1500);
+                } else if (currentPlayer.isHuman) {
+                    elements.gameStatus.textContent = 'Ваш ход! Бросайте кубик';
+                    elements.rollBtn.disabled = false;
+                } else {
+                    elements.gameStatus.textContent = `${currentPlayer.name} думает...`;
+                    elements.rollBtn.disabled = true;
+                    
+                    // ИИ делает ход через случайную задержку
+                    const delay = Math.random() * (config.botThinkingTime.max - config.botThinkingTime.min) + config.botThinkingTime.min;
+                    setTimeout(() => {
+                        if (gameState.gameActive) rollDice();
+                    }, delay);
+                }
+            }
+
+            // Бросок кубика
+            function rollDice() {
+                if (gameState.isRolling || !gameState.gameActive) return;
+                
+                gameState.isRolling = true;
+                elements.rollBtn.disabled = true;
+                
+                // Воспроизведение звука броска
+                if (soundEnabled) {
+                    audio.diceRoll.currentTime = 0;
+                    audio.diceRoll.play();
+                }
+                
+                // Добавляем анимацию вращения кубика
+                elements.dice3D.style.animation = 'diceRoll 1s ease-out';
+                
+                // Анимация броска
+                let rolls = 0;
+                const maxRolls = 12 + Math.floor(Math.random() * 10);
+                const rollInterval = setInterval(() => {
+                    const value = Math.floor(Math.random() * 6) + 1;
+                    rotateDice(value);
+                    
+                    rolls++;
+                    if (rolls >= maxRolls) {
+                        clearInterval(rollInterval);
+
+                        // Финальное значение
+                        const diceValue = Math.floor(Math.random() * 6) + 1;
+                        rotateDice(diceValue);
+                        
+                        // Завершаем анимацию
+                        setTimeout(() => {
+                            elements.dice3D.style.animation = '';
+                            
+                            movePlayer(diceValue);
+                        }, 1000);
+                    }
+                }, 150);
+            }
+
+            // Вращение кубика
+            function rotateDice(value) {
+                const rotations = [
+                    { x: 0, y: 0 },           // 1
+                    { x: 0, y: 180 },         // 2
+                    { x: 90, y: 0 },          // 3
+                    { x: -90, y: 0 },         // 4
+                    { x: 0, y: 90 },          // 5
+                    { x: 0, y: -90 }          // 6
+                ];
+                
+                const rotation = rotations[value - 1];
+                elements.dice3D.style.transform = `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) rotateZ(${Math.random()*360}deg)`;
+            }
+
+            // Перемещение игрока
+            function movePlayer(steps) {
+                const player = gameState.players[gameState.currentPlayerIndex];
+                const newPosition = Math.min(player.position + steps, config.totalCells - 1);
+                
+                // Воспроизведение звука перемещения
+                if (soundEnabled) {
+                    audio.move.currentTime = 0;
+                    audio.move.play();
+                }
+                
+                // Анимация перемещения
+                animatePlayerMovement(player, newPosition, () => {
+                    player.position = newPosition;
+                    renderPlayers();
+                    
+                    // Проверка достижения финиша
+                    if (player.position === config.totalCells - 1) {
+                        endGame(player);
+                        return;
+                    }
+                    
+                    // Проверка специальных клеток
+                    checkSpecialCell(player);
+                    
+                    // Переход к следующему ходу
+                    setTimeout(() => nextTurn(), 1000);
+                });
+            }
+
+            // Анимация перемещения игрока
+            function animatePlayerMovement(player, newPosition, callback) {
+                let currentPos = player.position;
+                const steps = newPosition - currentPos;
+                const stepDuration = 500 / Math.abs(steps);
+                let stepCount = 0;
+                
+                const moveInterval = setInterval(() => {
+                    if (stepCount >= Math.abs(steps)) {
+                        clearInterval(moveInterval);
+                        callback();
+                        return;
+                    }
+                    
+                    currentPos += steps > 0 ? 1 : -1;
+                    const tempPlayer = {...player, position: currentPos};
+                    
+                    // Временное обновление позиции для анимации
+                    const tempPlayers = gameState.players.map(p => 
+                        p.id === player.id ? {...p, position: currentPos} : p
+                    );
+                    
+                    gameState.players = tempPlayers;
+                    renderPlayers();
+                    
+                    stepCount++;
+                }, stepDuration);
+            }
+
+            // Проверка специальных клеток
+            function checkSpecialCell(player) {
+                const cellIndex = player.position;
+                const specialCell = config.specialCells[cellIndex];
+                
+                if (!specialCell) return;
+                
+                let message = '';
+                
+                // Воспроизведение звука эффекта
+                if (soundEnabled && audio[specialCell.sound]) {
+                    audio[specialCell.sound].currentTime = 0;
+                    audio[specialCell.sound].play();
+                }
+                
+                switch (specialCell.type) {
+                    case 'trap':
+                        player.position = Math.max(0, player.position + specialCell.effect);
+                        message = `${player.name} попал в ловушку "${specialCell.name}"! Возврат на ${Math.abs(specialCell.effect)} клеток`;
+                        break;
+                        
+                    case 'boost':
+                        player.position = Math.min(config.totalCells - 1, player.position + specialCell.effect);
+                        message = `${player.name} активировал "${specialCell.name}"! Продвижение на ${specialCell.effect} клеток`;
+                        break;
+                        
+                    case 'portal':
+                        const target = specialCell.effect[Math.floor(Math.random() * specialCell.effect.length)];
+                        player.position = target;
+                        message = `${player.name} использовал "${specialCell.name}"! Телепортация на клетку ${target + 1}`;
+                        break;
+                        
+                    case 'skip':
+                        player.skipTurns = specialCell.effect;
+                        message = `${player.name} попал в "${specialCell.name}"! Пропуск ${specialCell.effect} хода(ов)`;
+                        break;
+                }
+                
+                elements.gameStatus.textContent = message;
+                renderPlayers();
+            }
+
+            // Следующий ход
+            function nextTurn() {
+                // Уменьшаем счетчик пропущенных ходов
+                const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+                if (currentPlayer.skipTurns > 0) {
+                    currentPlayer.skipTurns--;
+                }
+                
+                // Переход к следующему игроку
+                gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+                gameState.isRolling = false;
+                
+                renderPlayersInfo();
+                updateGameStatus();
+            }
+
+            // Завершение игры
+            function endGame(winner) {
+                gameState.gameActive = false;
+                elements.winnerName.textContent = winner.name;
+                
+                // Воспроизведение звука победы
+                if (soundEnabled) {
+                    audio.victory.currentTime = 0;
+                    audio.victory.play();
+                }
+                
+                // Анимация просветления
+                setTimeout(() => {
+                    elements.victoryOverlay.style.opacity = '1';
+                    elements.victoryOverlay.style.pointerEvents = 'all';
+                    
+                    const enlightenment = elements.enlightenment;
+                    enlightenment.style.animation = 'enlightenment-grow 3s forwards';
+                    
+                    // Создаем частицы
+                    createParticles();
+                }, 1000);
+            }
+
+            // Создание частиц для анимации победы
+            function createParticles() {
+                const overlay = elements.victoryOverlay;
+                for (let i = 0; i < 200; i++) {
+                    const particle = document.createElement('div');
+                    particle.style.position = 'absolute';
+                    particle.style.width = `${Math.random() * 15 + 5}px`;
+                    particle.style.height = particle.style.width;
+                    particle.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 60%)`;
+                    particle.style.borderRadius = '50%';
+                    particle.style.left = `${Math.random() * 100}%`;
+                    particle.style.top = `${Math.random() * 100}%`;
+                    particle.style.opacity = '0';
+                    particle.style.boxShadow = '0 0 15px currentColor';
+                    particle.style.zIndex = '1001';
+                    overlay.appendChild(particle);
+                    
+                    // Анимация
+                    const animation = particle.animate([
+                        { transform: 'translate(0, 0) scale(0)', opacity: 0 },
+                        { transform: `translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) scale(1)`, opacity: 1 },
+                        { transform: `translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px) scale(0)`, opacity: 0 }
+                    ], {
+                        duration: 2000 + Math.random() * 3000,
+                        delay: Math.random() * 1000
+                    });
+                    
+                    animation.onfinish = () => particle.remove();
+                }
+            }
+
+            // Перезапуск игры
+            function restartGame() {
+                elements.victoryOverlay.style.opacity = '0';
+                elements.victoryOverlay.style.pointerEvents = 'none';
+                elements.enlightenment.style.animation = '';
+                
+                // Сбрасываем состояние игры
+                gameState.players = [];
+                gameState.currentPlayerIndex = 0;
+                gameState.isRolling = false;
+                gameState.gameActive = true;
+                
+                // Пересоздаем игроков и доску
+                createPlayers();
+                generateBoard();
+                renderPlayers();
+                renderPlayersInfo();
+                updateGameStatus();
+            }
+
+            // Вспомогательные функции
+            function getRandomColor() {
+                const colors = [
+                    '#3498db', '#2ecc71', '#e74c3c', '#9b59b6', 
+                    '#1abc9c', '#f1c40f', '#e67e22', '#d35400'
+                ];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            // Запуск игры
+            initGame();
+            renderPlayers();
+        });
+    </script>
+</body>
+</html>
