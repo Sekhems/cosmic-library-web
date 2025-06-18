@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Галактическая Библиотека</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #000428, #004e92);
+            color: #e0e0ff;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Космические анимации */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.1; }
+            50% { opacity: 1; }
+            100% { opacity: 0.1; }
+        }
+        
+        .comet {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,0), rgba(100,200,255,0.8));
+            filter: blur(1px);
+            animation: cometFly linear infinite;
+            transform-origin: left;
+        }
+        
+        @keyframes cometFly {
+            0% { 
+                transform: translateX(-100px) scaleX(0);
+                opacity: 0;
+            }
+            20% { opacity: 1; }
+            100% { 
+                transform: translateX(100vw) scaleX(30);
+                opacity: 0;
+            }
+        }
+        
+        /* Стили контента */
+        .karma-matrix-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(10, 10, 30, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(80, 120, 255, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            position: relative;
+            z-index: 1;
+            animation: contentAppear 1s ease-out;
+        }
+        
+        @keyframes contentAppear {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        h2 {
+            text-align: center;
+            color: #aaccff;
+            text-shadow: 0 0 10px rgba(100, 150, 255, 0.5);
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .matrix-form {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            margin-bottom: 8px;
+            color: #88aaff;
+            font-size: 0.95em;
+        }
+        
+        .input-field {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #4a4a8a;
+            background: rgba(20, 20, 40, 0.6);
+            color: #e0e0ff;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #66aaff;
+            box-shadow: 0 0 10px rgba(100, 150, 255, 0.5);
+        }
+        
+        .calculate-btn {
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #3a3a8a, #2a2a6a);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .calculate-btn:hover {
+            background: linear-gradient(135deg, #4a4aaa, #3a3a8a);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(80, 120, 255, 0.4);
+        }
+        
+        .matrix-section {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(20, 20, 50, 0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(100, 150, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .matrix-section h4 {
+            color: #88ddff;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .matrix-table {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        
+        .matrix-row {
+            display: contents;
+        }
+        
+        .matrix-row > div {
+            padding: 12px 10px;
+            border-bottom: 1px solid rgba(100, 150, 255, 0.2);
+            border-right: 1px solid rgba(100, 150, 255, 0.2);
+            background: rgba(15, 15, 35, 0.7);
+            text-align: center;
+        }
+        
+        .matrix-row:first-child > div {
+            background: rgba(60, 60, 120, 0.7);
+            font-weight: bold;
+            color: #aaccff;
+        }
+        
+        .matrix-row:last-child > div {
+            background: rgba(70, 50, 120, 0.7);
+            font-weight: bold;
+            color: #ddaaff;
+        }
+        
+        #karmaProgramsList {
+            columns: 2;
+            column-gap: 30px;
+            padding-left: 20px;
+        }
+        
+        #karmaProgramsList li {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            color: #ccddff;
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        #karmaProgramsList li:before {
+            content: '✦';
+            position: absolute;
+            left: 0;
+            color: #66aaff;
+        }
+        
+        #matrixResult {
+            margin-top: 25px;
+            border-top: 1px solid rgba(100, 150, 255, 0.3);
+            padding-top: 25px;
+        }
+        
+        #matrixResult h3 {
+            color: #88ddff;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+        
+        @media (max-width: 768px) {
+            .karma-matrix-content {
+                padding: 15px;
+            }
+            
+            #karmaProgramsList {
+                columns: 1;
+            }
+            
+            .matrix-table {
+                grid-template-columns: repeat(4, auto);
+                font-size: 0.85em;
+            }
+            
+            .matrix-row > div {
+                padding: 8px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Космические эффекты -->
+    <div class="stars" id="stars"></div>
+    
+    <!-- Основной контент -->
+    <div class="karma-matrix-content">
+        <h2>Кармический калькулятор</h2>
+        <p>Рассчитайте свои Кармические и Родовые Программы "Целостная Матрица Судьбы"</p>
+        
+        <div class="matrix-form">
+            <div class="form-group">
+                <label>Фамилия (как в паспорте)</label>
+                <input type="text" class="input-field" id="matrixLName" placeholder="Фамилия">
+            </div>
+            
+            <div class="form-group">
+                <label>Имя (как в паспорте)</label>
+                <input type="text" class="input-field" id="matrixFName" placeholder="Имя">
+            </div>
+            
+            <div class="form-group">
+                <label>Отчество (как в паспорте)</label>
+                <input type="text" class="input-field" id="matrixSName" placeholder="Отчество">
+            </div>
+            
+            <div class="form-group">
+                <label>Дата рождения (ДД.ММ.ГГГГ)</label>
+                <input type="text" class="input-field" id="matrixBirthday" placeholder="14.06.1987">
+            </div>
+            
+            <div class="form-group">
+                <label>Пол</label>
+                <select class="input-field" id="matrixSex">
+                    <option value="МУЖСКОЙ">Мужской</option>
+                    <option value="ЖЕНСКИЙ">Женский</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Фамилия отца</label>
+                <input type="text" class="input-field" id="matrixFatherName" placeholder="Фамилия отца">
+            </div>
+            
+            <div class="form-group">
+                <label>Фамилия матери (девичья)</label>
+                <input type="text" class="input-field" id="matrixMotherName" placeholder="Фамилия матери">
+            </div>
+            
+            <button class="calculate-btn" onclick="calculateKarmaMatrix()">Рассчитать матрицу</button>
+        </div>
+        
+        <div id="matrixResult" style="display:none; margin-top:20px;">
+            <h3>Результаты расчета:</h3>
+            <div class="matrix-section">
+                <p><strong>Дата рождения:</strong> <span id="resultBirthday"></span></p>
+                <p><strong>Трончатый код мужского рода:</strong> <span id="resultMaleCode"></span></p>
+                <p><strong>Трончатый код женского рода:</strong> <span id="resultFemaleCode"></span></p>
+                <p><strong>Личная сила:</strong> <span id="resultPersonalPower"></span></p>
+                <p><strong>Сила рода:</strong> <span id="resultFamilyPower"></span></p>
+                <p><strong>Код внутренней силы:</strong> <span id="resultInnerPower"></span></p>
+            </div>
+            
+            <div class="matrix-section">
+                <h4>20 лет</h4>
+                <div class="matrix-table">
+                    <div class="matrix-row">
+                        <div>Энергия</div>
+                        <div>Физика</div>
+                        <div>Эмоции</div>
+                        <div>Названия чакр</div>
+                    </div>
+                    <!-- Строки таблицы будут сгенерированы скриптом -->
+                </div>
+            </div>
+            
+            <div class="matrix-section">
+                <h4>Духовное предназначение: <span id="spiritualPurpose"></span></h4>
+                <h4>Кармические программы:</h4>
+                <ul id="karmaProgramsList"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Генерация космических эффектов
+        document.addEventListener('DOMContentLoaded', function() {
+            const starsContainer = document.getElementById('stars');
+            
+            // Создаем звезды
+            for (let i = 0; i < 200; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.width = `${Math.random() * 3}px`;
+                star.style.height = star.style.width;
+                star.style.setProperty('--duration', `${2 + Math.random() * 3}s`);
+                starsContainer.appendChild(star);
+            }
+            
+            // Создаем кометы
+            setInterval(() => {
+                const comet = document.createElement('div');
+                comet.classList.add('comet');
+                comet.style.top = `${Math.random() * 100}%`;
+                comet.style.setProperty('--duration', `${5 + Math.random() * 10}s`);
+                comet.style.animation = `cometFly ${3 + Math.random() * 5}s linear`;
+                starsContainer.appendChild(comet);
+                
+                // Удаляем комету после завершения анимации
+                setTimeout(() => {
+                    comet.remove();
+                }, 10000);
+            }, 3000);
+        });
+
+        // Логика расчета матрицы судьбы
+        function calculateKarmaMatrix() {
+            // Сбор данных из формы
+            const lname = document.getElementById('matrixLName').value.trim();
+            const fname = document.getElementById('matrixFName').value.trim();
+            const sname = document.getElementById('matrixSName').value.trim();
+            const birthday = document.getElementById('matrixBirthday').value.trim();
+            const sex = document.getElementById('matrixSex').value;
+            const fatherName = document.getElementById('matrixFatherName').value.trim();
+            const motherName = document.getElementById('matrixMotherName').value.trim();
+
+            if (!lname || !fname || !sname || !birthday) {
+                alert('Пожалуйста, заполните обязательные поля: ФИО и дата рождения');
+                return;
+            }
+
+            // Создаем уникальный хэш на основе введенных данных
+            const dataString = `${lname}${fname}${sname}${birthday}${sex}${fatherName}${motherName}`;
+            const seed = generateSeed(dataString);
+            
+            // Рассчитываем основные показатели
+            const maleCode = calculateCode(seed, 3, 1, 10);
+            const femaleCode = calculateCode(seed + 1, 3, 1, 10);
+            const personalPower = calculatePersonalPower(seed, birthday);
+            const familyPower = calculateFamilyPower(seed, fatherName, motherName);
+            const innerPower = calculateInnerPower(seed, birthday, sex);
+            const spiritualPurpose = calculateSpiritualPurpose(seed, birthday);
+            
+            // Показываем результаты
+            document.getElementById('matrixResult').style.display = 'block';
+            document.getElementById('resultBirthday').textContent = birthday;
+            document.getElementById('resultMaleCode').textContent = maleCode.join(', ');
+            document.getElementById('resultFemaleCode').textContent = femaleCode.join(', ');
+            document.getElementById('resultPersonalPower').textContent = personalPower;
+            document.getElementById('resultFamilyPower').textContent = familyPower;
+            document.getElementById('resultInnerPower').textContent = innerPower.join(', ');
+            document.getElementById('spiritualPurpose').textContent = spiritualPurpose;
+            
+            // Генерируем таблицу матрицы
+            generateMatrixTable(seed, birthday, lname);
+            
+            // Генерируем список кармических программ
+            generateKarmaPrograms(seed, spiritualPurpose);
+            
+            // Плавная прокрутка к результатам
+            document.getElementById('matrixResult').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start'
+            });
+        }
+
+        // Генерация уникального seed на основе данных
+        function generateSeed(dataString) {
+            let hash = 0;
+            for (let i = 0; i < dataString.length; i++) {
+                const char = dataString.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Преобразуем в 32-битное целое
+            }
+            return Math.abs(hash);
+        }
+
+        // Расчет кода (мужского/женского)
+        function calculateCode(seed, count, min, max) {
+            const codes = [];
+            for (let i = 0; i < count; i++) {
+                const code = min + Math.floor((seed * (i+1) * 9301 + 49297) % 233280) % (max - min + 1);
+                codes.push(code);
+            }
+            return codes;
+        }
+
+        // Расчет личной силы
+        function calculatePersonalPower(seed, birthday) {
+            // Преобразуем дату рождения в число
+            const dateNumbers = birthday.split('.').join('');
+            const dateSum = dateNumbers.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+            
+            // Комбинируем с seed
+            return 1 + (dateSum + seed) % 9;
+        }
+
+        // Расчет силы рода
+        function calculateFamilyPower(seed, fatherName, motherName) {
+            // Преобразуем фамилии в числа
+            const fatherValue = fatherName.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+            const motherValue = motherName.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+            
+            return 1 + (fatherValue + motherValue + seed) % 9;
+        }
+
+        // Расчет внутренней силы
+        function calculateInnerPower(seed, birthday, sex) {
+            const dateParts = birthday.split('.');
+            const day = parseInt(dateParts[0]);
+            const month = parseInt(dateParts[1]);
+            const year = parseInt(dateParts[2]);
+            
+            // Расчет на основе даты и пола
+            const baseValue = sex === 'МУЖСКОЙ' 
+                ? (day * month) % 20 
+                : (day + month + year) % 20;
+                
+            return [
+                baseValue + 1,
+                1 + (seed + baseValue) % 9,
+                baseValue + 1 + (seed % 10)
+            ];
+        }
+
+        // Расчет духовного предназначения
+        function calculateSpiritualPurpose(seed, birthday) {
+            const dateParts = birthday.split('.');
+            const day = parseInt(dateParts[0]);
+            const month = parseInt(dateParts[1]);
+            const yearLastTwo = parseInt(dateParts[2].slice(-2));
+            
+            // Расчет на основе даты рождения
+            const baseValue = (day + month + yearLastTwo) % 20;
+            return baseValue > 0 ? baseValue : 10;
+        }
+
+        // Генерация таблицы матрицы
+        function generateMatrixTable(seed, birthday, lname) {
+            const tableContainer = document.querySelector('.matrix-table');
+            // Очищаем предыдущие результаты (кроме заголовка)
+            while (tableContainer.children.length > 1) {
+                tableContainer.removeChild(tableContainer.lastChild);
+            }
+            
+            // Список чакр
+            const chakras = [
+                "9. Родник", "8. Чело", "7. Устье", 
+                "6. Леля", "5. Лада", "4. Перси", 
+                "3. Живот", "2. Зарод", "1. Исток", "ИТОГО"
+            ];
+            
+            const matrixData = [];
+            let totalEnergy = 0, totalPhysics = 0, totalEmotions = 0;
+            
+            // Генерация данных для 9 строк
+            for (let i = 0; i < 9; i++) {
+                const energy = 1 + (seed * (i+1) * 9301 + 49297) % 233280 % 20;
+                const physics = 1 + (seed * (i+2) * 49297 + 9301) % 233280 % 20;
+                const emotions = 1 + (seed * (i+3) * 233280 + 49297) % 9301 % 20;
+                
+                matrixData.push({ energy, physics, emotions, chakra: chakras[i] });
+                
+                totalEnergy += energy;
+                totalPhysics += physics;
+                totalEmotions += emotions;
+            }
+            
+            // Добавляем итоговую строку
+            matrixData.push({ 
+                energy: totalEnergy, 
+                physics: totalPhysics, 
+                emotions: totalEmotions, 
+                chakra: chakras[9] 
+            });
+            
+            // Добавляем строки с данными
+            matrixData.forEach(row => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'matrix-row';
+                rowDiv.innerHTML = `
+                    <div>${row.energy}</div>
+                    <div>${row.physics}</div>
+                    <div>${row.emotions}</div>
+                    <div>${row.chakra}</div>
+                `;
+                tableContainer.appendChild(rowDiv);
+            });
+        }
+
+        // Генерация списка кармических программ
+        function generateKarmaPrograms(seed, spiritualPurpose) {
+            const allPrograms = [
+                "Душа, принесенная в жертву", "Бунтарь", "Сокрытие истины",
+                "Миллионер", "Разгул", "Волшебник, отшельник, не принятие знаний",
+                "Сговор", "Хвастовство", "Мир страстей и сказок",
+                "Пытки, издевательства", "Надзиратель", "Темный Маг"
+            ];
+            
+            // Выбираем программы на основе spiritualPurpose и seed
+            const selectedPrograms = [];
+            const count = 5 + spiritualPurpose % 3; // 5-7 программ
+            
+            for (let i = 0; i < count; i++) {
+                const index = (seed * (i+1) * 49297) % allPrograms.length;
+                if (!selectedPrograms.includes(allPrograms[index])) {
+                    selectedPrograms.push(allPrograms[index]);
+                }
+            }
+            
+            const programsList = document.getElementById('karmaProgramsList');
+            programsList.innerHTML = '';
+            selectedPrograms.forEach(program => {
+                const li = document.createElement('li');
+                li.textContent = program;
+                programsList.appendChild(li);
+            });
+        }
+    </script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+    </script>
+</body>
+</html>
